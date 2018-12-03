@@ -83,6 +83,7 @@
 #include "gromacs/utility/textwriter.h"
 
 #include "cuda_version_information.h"
+#include "hip_version_information.h"
 
 namespace
 {
@@ -301,13 +302,13 @@ void gmx_print_version_info(gmx::TextWriter *writer)
     writer->writeLine(formatString("OpenCL library:     %s", OPENCL_LIBRARY));
     writer->writeLine(formatString("OpenCL version:     %s", OPENCL_VERSION_STRING));
 #endif
-#if GMX_GPU == GMX_GPU_CUDA
-    writer->writeLine(formatString("CUDA compiler:      %s\n", CUDA_COMPILER_INFO));
-    writer->writeLine(formatString("CUDA compiler flags:%s\n", CUDA_COMPILER_FLAGS));
+#if GMX_GPU == GMX_GPU_HIP
+    writer->writeLine(formatString("HIP compiler:      %s\n", CUDA_COMPILER_INFO));
+    writer->writeLine(formatString("HIP compiler flags:%s\n", CUDA_COMPILER_FLAGS));
     auto driverVersion = gmx::getCudaDriverVersion();
-    writer->writeLine(formatString("CUDA driver:        %d.%d\n", driverVersion.first, driverVersion.second));
+    writer->writeLine(formatString("HIP driver:        %d.%d\n", driverVersion.first, driverVersion.second));
     auto runtimeVersion = gmx::getCudaRuntimeVersion();
-    writer->writeLine(formatString("CUDA runtime:       %d.%d\n", runtimeVersion.first, runtimeVersion.second));
+    writer->writeLine(formatString("HIP runtime:       %d.%d\n", runtimeVersion.first, runtimeVersion.second));
 #endif
 }
 

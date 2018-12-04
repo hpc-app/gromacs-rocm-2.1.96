@@ -49,20 +49,20 @@ void nbnxn_cuda_set_cacheconfig(const gmx_device_info_t *devinfo);
  *  assert on that condition because the data_mgmt module ends up calling this
  *  function even if texture references are not used.
  */
-const struct texture<float, 1, cudaReadModeElementType> &nbnxn_cuda_get_nbfp_texref();
+const struct texture<float, 1, hipReadModeElementType> &nbnxn_cuda_get_nbfp_texref();
 /*! \brief Return the reference to the nbfp_comb texture.
  *
  *  Note: it can return junk when c_disableCudaTextures==false, but we don't
  *  assert on that condition because the data_mgmt module ends up calling this
  *  function even if texture references are not used.
  */
-const struct texture<float, 1, cudaReadModeElementType> &nbnxn_cuda_get_nbfp_comb_texref();
+const struct texture<float, 1, hipReadModeElementType> &nbnxn_cuda_get_nbfp_comb_texref();
 /*! \brief Return the reference to the coulomb_tab texture.
  *
  *  Note: it can return junk when c_disableCudaTextures==false, but we don't
  *  assert on that condition because the data_mgmt module ends up calling this
  *  function even if texture references are not used.
  */
-const struct texture<float, 1, cudaReadModeElementType> &nbnxn_cuda_get_coulomb_tab_texref();
+const struct texture<float, 1, hipReadModeElementType> &nbnxn_cuda_get_coulomb_tab_texref();
 
 #endif

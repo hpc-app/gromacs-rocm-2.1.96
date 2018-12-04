@@ -47,8 +47,8 @@
 
 #include <string>
 
-#if GMX_GPU == GMX_GPU_CUDA
-#include "nbnxn_cuda/nbnxn_cuda_types.h"
+#if GMX_GPU == GMX_GPU_HIP
+#include "nbnxn_cuda/nbnxn_cuda_types.hip.h"
 #endif
 
 #if GMX_GPU == GMX_GPU_OPENCL

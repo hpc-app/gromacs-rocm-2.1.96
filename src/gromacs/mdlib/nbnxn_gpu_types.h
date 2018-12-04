@@ -47,7 +47,7 @@ struct gmx_nbnxn_ocl_t;
 typedef struct gmx_nbnxn_ocl_t gmx_nbnxn_gpu_t;
 #endif
 
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
 struct gmx_nbnxn_cuda_t;
 typedef struct gmx_nbnxn_cuda_t gmx_nbnxn_gpu_t;
 #endif

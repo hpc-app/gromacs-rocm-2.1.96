@@ -64,7 +64,7 @@
 #include "gromacs/utility/smalloc.h"
 
 #include "nbnxn_cuda.h"
-#include "nbnxn_cuda_types.h"
+#include "nbnxn_cuda_types.hip.h"
 
 /* This is a heuristically determined parameter for the Fermi, Kepler
  * and Maxwell architectures for the minimum size of ci lists by multiplying

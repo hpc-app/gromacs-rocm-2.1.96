@@ -65,7 +65,7 @@
 #include "gromacs/utility/cstringutil.h"
 #include "gromacs/utility/gmxassert.h"
 
-#include "nbnxn_cuda_types.h"
+#include "nbnxn_cuda_types.hip.h"
 
 /*
  * Texture references are created at compile-time and need to be declared
@@ -181,7 +181,7 @@ static inline int calc_nb_kernel_nblock(int nwork_units, const gmx_device_info_t
  *
  *  Note that the row- and column-order of function pointers has to match the
  *  order of corresponding enumerated electrostatics and vdw types, resp.,
- *  defined in nbnxn_cuda_types.h.
+ *  defined in nbnxn_cuda_types.hip.h.
  */
 
 /*! Force-only kernel function pointers. */

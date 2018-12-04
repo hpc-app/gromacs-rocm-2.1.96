@@ -43,8 +43,8 @@ if(GMX_USE_CUDA)
     endif()
 
     file(GLOB NBNXN_CUDA_SOURCES
-         nbnxn_cuda.cu
-         nbnxn_cuda_data_mgmt.cu
+         nbnxn_cuda.hip.cpp
+         nbnxn_cuda_data_mgmt.hip.cpp
          nbnxn_cuda_jit_support.cu
          ${NBNXN_CUDA_KERNEL_SOURCES})
     set(MDLIB_SOURCES ${MDLIB_SOURCES} ${NBNXN_CUDA_SOURCES} PARENT_SCOPE)

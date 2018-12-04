@@ -39,7 +39,7 @@
 #ifndef GMX_MDLIB_NBNXN_CUDA_NBNXN_CUDA_H
 #define GMX_MDLIB_NBNXN_CUDA_NBNXN_CUDA_H
 
-#include "nbnxn_cuda_types.h"
+#include "nbnxn_cuda_types.hip.h"
 
 //! Set up the cache configuration for the non-bonded kernels.
 void nbnxn_cuda_set_cacheconfig(const gmx_device_info_t *devinfo);

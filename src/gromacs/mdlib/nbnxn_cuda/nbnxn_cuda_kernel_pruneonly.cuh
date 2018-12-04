@@ -51,7 +51,7 @@
 #include "gromacs/mdlib/nbnxn_cuda/nbnxn_cuda_kernel_utils.cuh"
 #include "gromacs/pbcutil/ishift.h"
 
-#include "nbnxn_cuda_types.h"
+#include "nbnxn_cuda_types.hip.h"
 
 /* Note that floating-point constants in CUDA code should be suffixed
  * with f (e.g. 0.5f), to stop the compiler producing intermediate

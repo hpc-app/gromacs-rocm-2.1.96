@@ -83,8 +83,8 @@ const char * g_specifyEverythingFormatString =
 #if GMX_GPU != GMX_GPU_NONE
     " If you simply want to restrict which GPUs are used, then it is "
     "better to use mdrun -gpu_id. Otherwise, setting the "
-#  if GMX_GPU == GMX_GPU_CUDA
-    "CUDA_VISIBLE_DEVICES"
+#  if GMX_GPU == GMX_GPU_HIP
+    "HIP_VISIBLE_DEVICES"
 #  elif GMX_GPU == GMX_GPU_OPENCL
     // Technically there is no portable way to do this offered by the
     // OpenCL standard, but the only current relevant case for GROMACS

@@ -72,12 +72,13 @@ static const unsigned int c_fullWarpMask = 0xffffffff;
 static __forceinline__ __device__
 void gmx_syncwarp(const unsigned int activeMask = c_fullWarpMask)
 {
-#if GMX_CUDA_VERSION < 9000
+/*#if GMX_CUDA_VERSION < 9000 */
     /* no sync needed on pre-Volta. */
+    /* we need no sync in hip. */
     GMX_UNUSED_VALUE(activeMask);
-#else
-    __syncwarp(activeMask);
-#endif
+/*#else*/
+/*    __syncwarp(activeMask); */
+/*#endif*/
 }
 
 /*! \brief Compatibility wrapper around the CUDA __ballot()/__ballot_sync() instrinsic.  */
@@ -85,12 +86,12 @@ static __forceinline__ __device__
 unsigned int gmx_ballot_sync(const unsigned int activeMask,
                              const int          pred)
 {
-#if GMX_CUDA_VERSION < 9000
+/*#if GMX_CUDA_VERSION < 9000 */
     GMX_UNUSED_VALUE(activeMask);
     return __ballot(pred);
-#else
-    return __ballot_sync(activeMask, pred);
-#endif
+/*#else*/
+/*    return __ballot_sync(activeMask, pred);*/
+/*#endif*/
 }
 
 /*! \brief Compatibility wrapper around the CUDA __any()/__any_sync() instrinsic.  */
@@ -98,12 +99,12 @@ static __forceinline__ __device__
 int gmx_any_sync(const unsigned int activeMask,
                  const int          pred)
 {
-#if GMX_CUDA_VERSION < 9000
+/*#if GMX_CUDA_VERSION < 9000 */
     GMX_UNUSED_VALUE(activeMask);
     return __any(pred);
-#else
-    return __any_sync(activeMask, pred);
-#endif
+/*#else*/
+/*    return __any_sync(activeMask, pred);*/
+/*#endif*/
 }
 
 /*! \brief Compatibility wrapper around the CUDA __shfl_up()/__shfl_up_sync() instrinsic.  */
@@ -114,12 +115,12 @@ T gmx_shfl_up_sync(const unsigned int activeMask,
                    unsigned int       offset,
                    int                width = warp_size)
 {
-#if GMX_CUDA_VERSION < 9000
+/*#if GMX_CUDA_VERSION < 9000 */
     GMX_UNUSED_VALUE(activeMask);
     return __shfl_up(var, offset, width);
-#else
-    return __shfl_up_sync(activeMask, var, offset, width);
-#endif
+/*#else*/
+/*    return __shfl_up_sync(activeMask, var, offset, width);*/
+/*#endif*/
 }
 
 /*! \brief Compatibility wrapper around the CUDA __shfl_down()/__shfl_down_sync() instrinsic.  */
@@ -130,12 +131,12 @@ T gmx_shfl_down_sync(const unsigned int activeMask,
                      unsigned int       offset,
                      int                width = warp_size)
 {
-#if GMX_CUDA_VERSION < 9000
+/*#if GMX_CUDA_VERSION < 9000*/
     GMX_UNUSED_VALUE(activeMask);
     return __shfl_down(var, offset, width);
-#else
-    return __shfl_down_sync(activeMask, var, offset, width);
-#endif
+/*#else*/
+/*    return __shfl_down_sync(activeMask, var, offset, width);*/
+/*#endif*/
 }
 
 /*! \brief Allow disabling CUDA textures using the GMX_DISABLE_CUDA_TEXTURES macro.

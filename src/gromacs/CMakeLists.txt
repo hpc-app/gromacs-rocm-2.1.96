@@ -167,7 +167,7 @@ if (GMX_CLANG_CUDA)
     endforeach()
 endif()
 
-if (GMX_USE_CUDA)
+if (GMX_USE_HIP)
     # Work around FindCUDA that prevents using target_link_libraries()
     # with keywords otherwise...
     set(CUDA_LIBRARIES PRIVATE ${CUDA_LIBRARIES})

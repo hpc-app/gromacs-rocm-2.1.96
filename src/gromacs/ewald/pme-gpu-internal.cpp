@@ -253,7 +253,7 @@ static bool pme_gpu_check_restrictions(const gmx_pme_t *pme, std::string *error)
         errorReasons.push_back("double precision");
     }
 #endif
-#if GMX_GPU != GMX_GPU_CUDA
+#if GMX_GPU != GMX_GPU_HIP
     {
         errorReasons.push_back("non-CUDA build of GROMACS");
     }

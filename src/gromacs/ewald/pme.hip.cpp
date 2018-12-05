@@ -72,22 +72,22 @@ int pme_gpu_get_atoms_per_warp(const PmeGpu *pmeGpu)
 
 void pme_gpu_synchronize(const PmeGpu *pmeGpu)
 {
-    cudaError_t stat = cudaStreamSynchronize(pmeGpu->archSpecific->pmeStream);
+    hipError_t stat = hipStreamSynchronize(pmeGpu->archSpecific->pmeStream);
     CU_RET_ERR(stat, "Failed to synchronize the PME GPU stream!");
 }
 
 void pme_gpu_alloc_energy_virial(const PmeGpu *pmeGpu)
 {
     const size_t energyAndVirialSize = c_virialAndEnergyCount * sizeof(float);
-    cudaError_t  stat                = cudaMalloc((void **)&pmeGpu->kernelParams->constants.d_virialAndEnergy, energyAndVirialSize);
-    CU_RET_ERR(stat, "cudaMalloc failed on PME energy and virial");
+    hipError_t  stat                = hipMalloc((void **)&pmeGpu->kernelParams->constants.d_virialAndEnergy, energyAndVirialSize);
+    CU_RET_ERR(stat, "hipMalloc failed on PME energy and virial");
     pmalloc((void **)&pmeGpu->staging.h_virialAndEnergy, energyAndVirialSize);
 }
 
 void pme_gpu_free_energy_virial(PmeGpu *pmeGpu)
 {
-    cudaError_t stat = cudaFree(pmeGpu->kernelParams->constants.d_virialAndEnergy);
-    CU_RET_ERR(stat, "cudaFree failed on PME energy and virial");
+    hipError_t stat = hipFree(pmeGpu->kernelParams->constants.d_virialAndEnergy);
+    CU_RET_ERR(stat, "hipFree failed on PME energy and virial");
     pmeGpu->kernelParams->constants.d_virialAndEnergy = nullptr;
     pfree(pmeGpu->staging.h_virialAndEnergy);
     pmeGpu->staging.h_virialAndEnergy = nullptr;
@@ -95,9 +95,9 @@ void pme_gpu_free_energy_virial(PmeGpu *pmeGpu)
 
 void pme_gpu_clear_energy_virial(const PmeGpu *pmeGpu)
 {
-    cudaError_t stat = cudaMemsetAsync(pmeGpu->kernelParams->constants.d_virialAndEnergy, 0,
+    hipError_t stat = hipMemsetAsync(pmeGpu->kernelParams->constants.d_virialAndEnergy, 0,
                                        c_virialAndEnergyCount * sizeof(float), pmeGpu->archSpecific->pmeStream);
-    CU_RET_ERR(stat, "PME energy/virial cudaMemsetAsync error");
+    CU_RET_ERR(stat, "PME energy/virial hipMemsetAsync error");
 }
 
 void pme_gpu_realloc_and_copy_bspline_values(const PmeGpu *pmeGpu)
@@ -178,7 +178,7 @@ void pme_gpu_realloc_coordinates(const PmeGpu *pmeGpu)
         const size_t paddingCount = DIM * pmeGpu->nAtomsAlloc - paddingIndex;
         if (paddingCount > 0)
         {
-            cudaError_t stat = cudaMemsetAsync(pmeGpu->kernelParams->atoms.d_coordinates + paddingIndex, 0, paddingCount * sizeof(float), pmeGpu->archSpecific->pmeStream);
+            hipError_t stat = hipMemsetAsync(pmeGpu->kernelParams->atoms.d_coordinates + paddingIndex, 0, paddingCount * sizeof(float), pmeGpu->archSpecific->pmeStream);
             CU_RET_ERR(stat, "PME failed to clear the padded coordinates");
         }
     }
@@ -217,7 +217,7 @@ void pme_gpu_realloc_and_copy_input_coefficients(const PmeGpu *pmeGpu, const flo
         const size_t paddingCount = pmeGpu->nAtomsAlloc - paddingIndex;
         if (paddingCount > 0)
         {
-            cudaError_t stat = cudaMemsetAsync(pmeGpu->kernelParams->atoms.d_coefficients + paddingIndex, 0, paddingCount * sizeof(float), pmeGpu->archSpecific->pmeStream);
+            hipError_t stat = hipMemsetAsync(pmeGpu->kernelParams->atoms.d_coefficients + paddingIndex, 0, paddingCount * sizeof(float), pmeGpu->archSpecific->pmeStream);
             CU_RET_ERR(stat, "PME failed to clear the padded charges");
         }
     }
@@ -323,10 +323,10 @@ void pme_gpu_free_grids(const PmeGpu *pmeGpu)
 
 void pme_gpu_clear_grids(const PmeGpu *pmeGpu)
 {
-    cudaError_t stat = cudaMemsetAsync(pmeGpu->kernelParams->grid.d_realGrid, 0,
+    hipError_t stat = hipMemsetAsync(pmeGpu->kernelParams->grid.d_realGrid, 0,
                                        pmeGpu->archSpecific->realGridSize * sizeof(float), pmeGpu->archSpecific->pmeStream);
     /* Should the complex grid be cleared in some weird case? */
-    CU_RET_ERR(stat, "cudaMemsetAsync on the PME grid error");
+    CU_RET_ERR(stat, "hipMemsetAsync on the PME grid error");
 }
 
 void pme_gpu_realloc_and_copy_fract_shifts(PmeGpu *pmeGpu)
@@ -388,7 +388,7 @@ void pme_gpu_copy_output_spread_grid(const PmeGpu *pmeGpu, float *h_grid)
 {
     const size_t gridSize = pmeGpu->archSpecific->realGridSize * sizeof(float);
     cu_copy_D2H(h_grid, pmeGpu->kernelParams->grid.d_realGrid, gridSize, pmeGpu->settings.transferKind, pmeGpu->archSpecific->pmeStream);
-    cudaError_t  stat = cudaEventRecord(pmeGpu->archSpecific->syncSpreadGridD2H, pmeGpu->archSpecific->pmeStream);
+    hipError_t  stat = hipEventRecord(pmeGpu->archSpecific->syncSpreadGridD2H, pmeGpu->archSpecific->pmeStream);
     CU_RET_ERR(stat, "PME spread grid sync event record failure");
 }
 
@@ -415,11 +415,11 @@ void pme_gpu_copy_input_gather_atom_data(const PmeGpu *pmeGpu)
         const size_t gridlineIndicesSizePerAtom = DIM * sizeof(int);
         const size_t splineDataSizePerAtom      = pmeGpu->common->pme_order * DIM * sizeof(float);
         // TODO: could clear only the padding and not the whole thing, but this is a test-exclusive code anyway
-        CU_RET_ERR(cudaMemsetAsync(kernelParamsPtr->atoms.d_gridlineIndices, 0, pmeGpu->nAtomsAlloc * gridlineIndicesSizePerAtom, pmeGpu->archSpecific->pmeStream),
+        CU_RET_ERR(hipMemsetAsync(kernelParamsPtr->atoms.d_gridlineIndices, 0, pmeGpu->nAtomsAlloc * gridlineIndicesSizePerAtom, pmeGpu->archSpecific->pmeStream),
                    "PME failed to clear the gridline indices");
-        CU_RET_ERR(cudaMemsetAsync(kernelParamsPtr->atoms.d_dtheta, 0, pmeGpu->nAtomsAlloc * splineDataSizePerAtom, pmeGpu->archSpecific->pmeStream),
+        CU_RET_ERR(hipMemsetAsync(kernelParamsPtr->atoms.d_dtheta, 0, pmeGpu->nAtomsAlloc * splineDataSizePerAtom, pmeGpu->archSpecific->pmeStream),
                    "PME failed to clear the spline derivatives");
-        CU_RET_ERR(cudaMemsetAsync(kernelParamsPtr->atoms.d_theta, 0, pmeGpu->nAtomsAlloc * splineDataSizePerAtom, pmeGpu->archSpecific->pmeStream),
+        CU_RET_ERR(hipMemsetAsync(kernelParamsPtr->atoms.d_theta, 0, pmeGpu->nAtomsAlloc * splineDataSizePerAtom, pmeGpu->archSpecific->pmeStream),
                    "PME failed to clear the spline values");
     }
     cu_copy_H2D(kernelParamsPtr->atoms.d_dtheta, pmeGpu->staging.h_dtheta, splinesSize, pmeGpu->settings.transferKind, pmeGpu->archSpecific->pmeStream);
@@ -430,7 +430,7 @@ void pme_gpu_copy_input_gather_atom_data(const PmeGpu *pmeGpu)
 
 void pme_gpu_sync_spread_grid(const PmeGpu *pmeGpu)
 {
-    cudaError_t stat = cudaEventSynchronize(pmeGpu->archSpecific->syncSpreadGridD2H);
+    hipError_t stat = hipEventSynchronize(pmeGpu->archSpecific->syncSpreadGridD2H);
     CU_RET_ERR(stat, "Error while waiting for the PME GPU spread grid to be copied to the host");
 }
 
@@ -455,32 +455,29 @@ void pme_gpu_init_internal(PmeGpu *pmeGpu)
     pmeGpu->maxGridWidthX = pmeGpu->deviceInfo->prop.maxGridSize[0];
 
     /* Creating a PME CUDA stream */
-    cudaError_t stat;
-    int         highest_priority, lowest_priority;
-    stat = cudaDeviceGetStreamPriorityRange(&lowest_priority, &highest_priority);
-    CU_RET_ERR(stat, "PME cudaDeviceGetStreamPriorityRange failed");
-    stat = cudaStreamCreateWithPriority(&pmeGpu->archSpecific->pmeStream,
-                                        cudaStreamDefault, //cudaStreamNonBlocking,
-                                        highest_priority);
+    hipError_t stat;
+ /*   stat = cudaDeviceGetStreamPriorityRange(&lowest_priority, &highest_priority); */
+ /*   CU_RET_ERR(stat, "PME cudaDeviceGetStreamPriorityRange failed"); */
+    stat = hipStreamCreate(&pmeGpu->archSpecific->pmeStream);
     CU_RET_ERR(stat, "cudaStreamCreateWithPriority on the PME stream failed");
 }
 
 void pme_gpu_destroy_specific(const PmeGpu *pmeGpu)
 {
     /* Destroy the CUDA stream */
-    cudaError_t stat = cudaStreamDestroy(pmeGpu->archSpecific->pmeStream);
-    CU_RET_ERR(stat, "PME cudaStreamDestroy error");
+    hipError_t stat = hipStreamDestroy(pmeGpu->archSpecific->pmeStream);
+    CU_RET_ERR(stat, "PME hipStreamDestroy error");
 }
 
 void pme_gpu_init_sync_events(const PmeGpu *pmeGpu)
 {
-    const auto  eventFlags = cudaEventDisableTiming;
-    CU_RET_ERR(cudaEventCreateWithFlags(&pmeGpu->archSpecific->syncSpreadGridD2H, eventFlags), "cudaEventCreate on syncSpreadGridD2H failed");
+    const auto  eventFlags = hipEventDisableTiming;
+    CU_RET_ERR(hipEventCreateWithFlags(&pmeGpu->archSpecific->syncSpreadGridD2H, eventFlags), "hipEventCreate on syncSpreadGridD2H failed");
 }
 
 void pme_gpu_destroy_sync_events(const PmeGpu *pmeGpu)
 {
-    CU_RET_ERR(cudaEventDestroy(pmeGpu->archSpecific->syncSpreadGridD2H), "cudaEventDestroy failed on syncSpreadGridD2H");
+    CU_RET_ERR(hipEventDestroy(pmeGpu->archSpecific->syncSpreadGridD2H), "hipEventDestroy failed on syncSpreadGridD2H");
 }
 
 void pme_gpu_reinit_3dfft(const PmeGpu *pmeGpu)

@@ -67,7 +67,7 @@
 struct gmx_hw_info;
 struct gmx_device_info_t;
 
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
 
 struct PmeGpuCuda;
 /*! \brief A typedef for including the GPU host data by pointer */

@@ -159,11 +159,11 @@ dim3 __host__ inline pmeGpuCreateGrid(const PmeGpu *pmeGpu, int blockCount)
 struct PmeGpuCuda
 {
     /*! \brief The CUDA stream where everything related to the PME happens. */
-    cudaStream_t pmeStream;
+    hipStream_t pmeStream;
 
     /* Synchronization events */
     /*! \brief Triggered after the grid has been copied to the host (after the spreading stage). */
-    cudaEvent_t syncSpreadGridD2H;
+    hipEvent_t syncSpreadGridD2H;
 
     // TODO: consider moving some things below into the non-CUDA struct.
 
@@ -235,17 +235,17 @@ struct PmeGpuCudaKernelParams : PmeGpuKernelParamsBase
 {
     /* These are CUDA texture objects, related to the grid size. */
     /*! \brief CUDA texture object for accessing grid.d_fractShiftsTable */
-    cudaTextureObject_t fractShiftsTableTexture;
+    hipTextureObject_t fractShiftsTableTexture;
     /*! \brief CUDA texture object for accessing grid.d_gridlineIndicesTable */
-    cudaTextureObject_t gridlineIndicesTableTexture;
+    hipTextureObject_t gridlineIndicesTableTexture;
 };
 
 /* CUDA texture reference functions which reside in respective kernel files
  * (due to texture references having scope of a translation unit).
  */
 /*! Returns the reference to the gridlineIndices texture. */
-const struct texture<int, 1, cudaReadModeElementType>   &pme_gpu_get_gridline_texref();
+const struct texture<int, 1, hipReadModeElementType>   &pme_gpu_get_gridline_texref();
 /*! Returns the reference to the fractShifts texture. */
-const struct texture<float, 1, cudaReadModeElementType> &pme_gpu_get_fract_shifts_texref();
+const struct texture<float, 1, hipReadModeElementType> &pme_gpu_get_fract_shifts_texref();
 
 #endif

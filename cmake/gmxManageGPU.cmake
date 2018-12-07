@@ -146,7 +146,7 @@ if (GMX_GPU)
     if (DEFINED NVML_LIBRARY)
         set(NVML_FIND_QUIETLY TRUE)
     endif()
-    find_package(NVML)
+#    find_package(NVML)
     # TODO Default to off, since linking is not implemented reliably
     option(GMX_USE_NVML "Use NVML support for better CUDA performance" OFF)
     mark_as_advanced(GMX_USE_NVML)
@@ -226,18 +226,18 @@ endmacro()
 include(CMakeDependentOption)
 include(gmxOptionUtilities)
 macro(gmx_gpu_setup)
-    if(GMX_GPU)
-        if(NOT GMX_CLANG_CUDA)
-            if(NOT CUDA_NVCC_EXECUTABLE)
-                message(FATAL_ERROR "nvcc is required for a CUDA build, please set CUDA_TOOLKIT_ROOT_DIR appropriately")
-            endif()
+#    if(GMX_GPU)
+#        if(NOT GMX_CLANG_CUDA)
+#            if(NOT CUDA_NVCC_EXECUTABLE)
+#                message(FATAL_ERROR "nvcc is required for a CUDA build, please set CUDA_TOOLKIT_ROOT_DIR appropriately")
+#            endif()
             # set up nvcc options
-            include(gmxManageNvccConfig)
-        else()
-            include(gmxManageClangCudaConfig)
-        endif()
+#            include(gmxManageNvccConfig)
+#        else()
+#            include(gmxManageClangCudaConfig)
+#        endif()
 
-        gmx_check_if_changed(_cuda_version_changed CUDA_VERSION)
+#        gmx_check_if_changed(_cuda_version_changed CUDA_VERSION)
 
         # Generate CUDA RT API version string which will end up in config.h
         # We do this because nvcc is silly enough to not define its own version
@@ -246,62 +246,62 @@ macro(gmx_gpu_setup)
         #
         # NOTE: CUDA v7.5 is expected to have nvcc define it own version, so in the
         # future we should switch to using that version string instead of our own.
-        if (NOT GMX_CUDA_VERSION OR _cuda_version_changed)
-            MATH(EXPR GMX_CUDA_VERSION "${CUDA_VERSION_MAJOR}*1000 + ${CUDA_VERSION_MINOR}*10")
-        endif()
+#        if (NOT GMX_CUDA_VERSION OR _cuda_version_changed)
+#            MATH(EXPR GMX_CUDA_VERSION "${CUDA_VERSION_MAJOR}*1000 + ${CUDA_VERSION_MINOR}*10")
+#        endif()
 
-        if (_cuda_version_changed)
+#        if (_cuda_version_changed)
             # check the generated CUDA API version against the one present in cuda_runtime_api.h
-            try_compile(_get_cuda_version_compile_res
-                ${CMAKE_BINARY_DIR}
-                ${CMAKE_SOURCE_DIR}/cmake/TestCUDAVersion.c
-                COMPILE_DEFINITIONS "-DGMX_CUDA_VERSION=${GMX_CUDA_VERSION}"
-                CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${CUDA_TOOLKIT_INCLUDE}"
-                OUTPUT_VARIABLE _get_cuda_version_compile_out)
+#            try_compile(_get_cuda_version_compile_res
+#                ${CMAKE_BINARY_DIR}
+#                ${CMAKE_SOURCE_DIR}/cmake/TestCUDAVersion.c
+#                COMPILE_DEFINITIONS "-DGMX_CUDA_VERSION=${GMX_CUDA_VERSION}"
+#                CMAKE_FLAGS "-DINCLUDE_DIRECTORIES=${CUDA_TOOLKIT_INCLUDE}"
+#                OUTPUT_VARIABLE _get_cuda_version_compile_out)
 
-            if (NOT _get_cuda_version_compile_res)
-                if (_get_cuda_version_compile_out MATCHES "CUDA version mismatch")
-                    message(FATAL_ERROR "The CUDA API version generated internally from the compiler version does not match the version reported by cuda.h. This means either that the CUDA detection picked up mismatching nvcc and the CUDA headers (likely not part of the same toolkit installation) or that there is an error in the internal version generation. If you are sure that it is not the former causing the error (check the relevant cache variables), define the GMX_CUDA_VERSION cache variable to work around the error.")
-                else()
-                    message(FATAL_ERROR "Could not detect CUDA runtime API version")
-                endif()
-            endif()
-        endif()
+#            if (NOT _get_cuda_version_compile_res)
+#                if (_get_cuda_version_compile_out MATCHES "CUDA version mismatch")
+#                    message(FATAL_ERROR "The CUDA API version generated internally from the compiler version does not match the version reported by cuda.h. This means either that the CUDA detection picked up mismatching nvcc and the CUDA headers (likely not part of the same toolkit installation) or that there is an error in the internal version generation. If you are sure that it is not the former causing the error (check the relevant cache variables), define the GMX_CUDA_VERSION cache variable to work around the error.")
+#                else()
+#                    message(FATAL_ERROR "Could not detect CUDA runtime API version")
+#                endif()
+#            endif()
+#        endif()
 
         # no OpenMP is no good!
-        if(NOT GMX_OPENMP)
-            message(WARNING "To use GPU acceleration efficiently, mdrun requires OpenMP multi-threading. Without OpenMP a single CPU core can be used with a GPU which is not optimal. Note that with MPI multiple processes can be forced to use a single GPU, but this is typically inefficient. You need to set both C and C++ compilers that support OpenMP (CC and CXX environment variables, respectively) when using GPUs.")
-        endif()
-    endif() # GMX_GPU
+#        if(NOT GMX_OPENMP)
+#            message(WARNING "To use GPU acceleration efficiently, mdrun requires OpenMP multi-threading. Without OpenMP a single CPU core can be used with a GPU which is not optimal. Note that with MPI multiple processes can be forced to use a single GPU, but this is typically inefficient. You need to set both C and C++ compilers that support OpenMP (CC and CXX environment variables, respectively) when using GPUs.")
+#        endif()
+#    endif() # GMX_GPU
 
-    if (GMX_CLANG_CUDA)
-        set (_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT FALSE)
-    else()
-        set (_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT TRUE)
-    endif()
-    cmake_dependent_option(GMX_CUDA_NB_SINGLE_COMPILATION_UNIT
-        "Whether to compile the CUDA non-bonded module using a single compilation unit." ${_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT}
-        "GMX_GPU" ON)
-    mark_as_advanced(GMX_CUDA_NB_SINGLE_COMPILATION_UNIT)
+#    if (GMX_CLANG_CUDA)
+#        set (_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT FALSE)
+#    else()
+#        set (_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT TRUE)
+#    endif()
+#    cmake_dependent_option(GMX_CUDA_NB_SINGLE_COMPILATION_UNIT
+#        "Whether to compile the CUDA non-bonded module using a single compilation unit." ${_GMX_CUDA_NB_SINGLE_COMPILATION_UNIT_DEFAULT}
+#        "GMX_GPU" ON)
+#    mark_as_advanced(GMX_CUDA_NB_SINGLE_COMPILATION_UNIT)
 
-    if (GMX_GPU AND NOT GMX_CLANG_CUDA)
+#    if (GMX_GPU AND NOT GMX_CLANG_CUDA)
         # We need to use single compilation unit for kernels:
         # when compiling with nvcc for CC 2.x devices where buggy kernel code is generated
-        gmx_check_if_changed(_gmx_cuda_target_changed GMX_CUDA_TARGET_SM GMX_CUDA_TARGET_COMPUTE CUDA_NVCC_FLAGS)
+#        gmx_check_if_changed(_gmx_cuda_target_changed GMX_CUDA_TARGET_SM GMX_CUDA_TARGET_COMPUTE CUDA_NVCC_FLAGS)
 
-        if(_gmx_cuda_target_changed OR NOT GMX_GPU_DETECTION_DONE)
+#        if(_gmx_cuda_target_changed OR NOT GMX_GPU_DETECTION_DONE)
             # CUDA 9.0 does not support CC 2.0; if arch targets are
             # generated from a manually provided list, we check for 2x
             # targets to see if single compilation unit needs to be on.
-            if((CUDA_VERSION VERSION_LESS "9.0") AND
-               ((NOT GMX_CUDA_TARGET_SM AND NOT GMX_CUDA_TARGET_COMPUTE) OR
-                (GMX_CUDA_TARGET_SM MATCHES "2[01]" OR GMX_CUDA_TARGET_COMPUTE MATCHES "2[01]")))
-                message(STATUS "Enabling single compilation unit for the CUDA non-bonded module. Multiple compilation units are not compatible with CC 2.x devices, to enable the feature specify only CC >=3.0 target architectures in GMX_CUDA_TARGET_SM/GMX_CUDA_TARGET_COMPUTE.")
-                set_property(CACHE GMX_CUDA_NB_SINGLE_COMPILATION_UNIT PROPERTY VALUE ON)
-            else()
-                message(STATUS "Enabling multiple compilation units for the CUDA non-bonded module.")
-                set_property(CACHE GMX_CUDA_NB_SINGLE_COMPILATION_UNIT PROPERTY VALUE OFF)
-            endif()
-        endif()
-    endif()
+#            if((CUDA_VERSION VERSION_LESS "9.0") AND
+#               ((NOT GMX_CUDA_TARGET_SM AND NOT GMX_CUDA_TARGET_COMPUTE) OR
+#                (GMX_CUDA_TARGET_SM MATCHES "2[01]" OR GMX_CUDA_TARGET_COMPUTE MATCHES "2[01]")))
+#                message(STATUS "Enabling single compilation unit for the CUDA non-bonded module. Multiple compilation units are not compatible with CC 2.x devices, to enable the feature specify only CC >=3.0 target architectures in GMX_CUDA_TARGET_SM/GMX_CUDA_TARGET_COMPUTE.")
+ #               set_property(CACHE GMX_CUDA_NB_SINGLE_COMPILATION_UNIT PROPERTY VALUE ON)
+ #           else()
+ #               message(STATUS "Enabling multiple compilation units for the CUDA non-bonded module.")
+ #               set_property(CACHE GMX_CUDA_NB_SINGLE_COMPILATION_UNIT PROPERTY VALUE OFF)
+ #           endif()
+ #       endif()
+ #   endif()
 endmacro()

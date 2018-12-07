@@ -219,7 +219,8 @@ set(REQUIRED_OPENCL_MIN_VERSION 1.1)
 
 if(NOT GMX_USE_OPENCL)
     # CUDA detection is done only if GMX_USE_OPENCL is OFF.
-    include(gmxManageGPU)
+ #   include(gmxManageGPU)
+    
     set(GMX_USE_HIP ${GMX_GPU})
     if(GMX_GPU)
         set(GMX_GPU_ACCELERATION_FRAMEWORK "GMX_GPU_HIP")

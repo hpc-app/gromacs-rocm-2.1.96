@@ -92,7 +92,7 @@ endif()
 #               fail if it is not available.
 # - ON , TRUE : Can't happen (GMX_GPU=ON can only be user-set at this point)
 if((GMX_GPU OR GMX_GPU_AUTO) AND NOT GMX_GPU_DETECTION_DONE)
-    if (EXISTS ${CUDA_TOOLKIT_ROOT_DIR})
+    if (EXISTS ${HIP_TOOLKIT_ROOT_DIR})
         set(CUDA_FOUND TRUE CACHE INTERNAL "Whether the CUDA toolkit was found" FORCE)
     else()
         set(CUDA_FOUND FALSE CACHE INTERNAL "Whether the CUDA toolkit was found" FORCE)

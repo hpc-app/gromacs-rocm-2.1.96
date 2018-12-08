@@ -42,8 +42,8 @@
 #ifndef GMX_EWALD_PME_3DFFT_CUH
 #define GMX_EWALD_PME_3DFFT_CUH
 
-#include <cufft.h>                  // for the cufft types
-
+#include <rocfft.h>                  // for the cufft types
+#include <hipfft.h>
 #include "gromacs/fft/fft.h"        // for the enum gmx_fft_direction
 
 struct PmeGpu;
@@ -53,10 +53,10 @@ struct PmeGpu;
  */
 class GpuParallel3dFft
 {
-    cufftHandle   planR2C_;
-    cufftHandle   planC2R_;
-    cufftReal    *realGrid_;
-    cufftComplex *complexGrid_;
+    hipfftHandle   planR2C_;
+    hipfftHandle   planC2R_;
+    hipfftReal    *realGrid_;
+    hipfftComplex *complexGrid_;
 
     public:
         /*! \brief

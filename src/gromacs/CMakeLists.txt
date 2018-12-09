@@ -172,6 +172,8 @@ if (GMX_USE_HIP)
     # with keywords otherwise...
     set(CUDA_LIBRARIES PRIVATE ${CUDA_LIBRARIES})
     include_directories(/opt/rocm/hip/include)
+    include_directories(/opt/rocm/hip/include/hip)
+    include_directories(/opt/rocm/rocfft/include)
     if (NOT GMX_CLANG_CUDA)
        # cuda_add_library(libgromacs ${LIBGROMACS_SOURCES})
          add_library(libgromacs ${LIBGROMACS_SOURCES})

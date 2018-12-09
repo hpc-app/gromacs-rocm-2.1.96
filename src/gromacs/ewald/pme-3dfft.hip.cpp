@@ -38,7 +38,7 @@
  *
  *  \author Aleksei Iupinov <a.yupinov@gmail.com>
  */
-
+#define __HIP_PLATFORM_HCC__
 #include "gmxpre.h"
 
 #include "pme-3dfft.cuh"

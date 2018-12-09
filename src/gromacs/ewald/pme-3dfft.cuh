@@ -42,8 +42,8 @@
 #ifndef GMX_EWALD_PME_3DFFT_CUH
 #define GMX_EWALD_PME_3DFFT_CUH
 
-#include <rocfft.h>                  // for the cufft types
-#include <hipfft.h>
+#include </opt/rocm/rocfft/include/rocfft.h>                  // for the cufft types
+#include </opt/rocm/rocfft/include/hipfft.h>
 #include "gromacs/fft/fft.h"        // for the enum gmx_fft_direction
 
 struct PmeGpu;

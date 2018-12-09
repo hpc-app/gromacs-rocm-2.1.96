@@ -81,6 +81,8 @@ if(GMX_GPU OR GMX_GPU_AUTO)
 
    # find_package(CUDA ${REQUIRED_CUDA_VERSION} ${FIND_CUDA_QUIETLY})
      find_package(HIP)
+     find_package(rocfft)
+     include(rocfft-config)
 endif()
 
 # Depending on the current vale of GMX_GPU and GMX_GPU_AUTO:

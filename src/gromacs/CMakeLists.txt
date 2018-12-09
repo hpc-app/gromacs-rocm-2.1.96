@@ -171,6 +171,7 @@ if (GMX_USE_HIP)
     # Work around FindCUDA that prevents using target_link_libraries()
     # with keywords otherwise...
     set(CUDA_LIBRARIES PRIVATE ${CUDA_LIBRARIES})
+    include_directories(/opt/rocm/hip/include)
     if (NOT GMX_CLANG_CUDA)
        # cuda_add_library(libgromacs ${LIBGROMACS_SOURCES})
          add_library(libgromacs ${LIBGROMACS_SOURCES})

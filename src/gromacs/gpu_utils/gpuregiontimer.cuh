@@ -69,8 +69,8 @@ template <> class GpuRegionTimerImpl<GpuFramework::CUDA>
         GpuRegionTimerImpl()
         {
             const int eventFlags = hipEventDefault;
-            CU_RET_ERR(hipEventCreate(&eventStart_, eventFlags), "GPU timing creation failure");
-            CU_RET_ERR(hipEventCreate(&eventStop_, eventFlags), "GPU timing creation failure");
+            CU_RET_ERR(hipEventCreate(&eventStart_), "GPU timing creation failure");
+            CU_RET_ERR(hipEventCreate(&eventStop_), "GPU timing creation failure");
         }
 
         ~GpuRegionTimerImpl()

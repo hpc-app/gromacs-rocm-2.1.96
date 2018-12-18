@@ -1,4 +1,3 @@
-#include "hip/hip_runtime.h"
 /*
  * This file is part of the GROMACS molecular simulation package.
  *
@@ -42,21 +41,33 @@
 
 #include "gmxpre.h"
 
+#define __HIP_PLATFORM_HCC__
+#define NDEBUG
 #include <cassert>
 
+#include "hip/hip_runtime.h"
+#include "hip/hcc_detail/hip_runtime.h"
+#include "hip/hip_runtime_api.h"
+
 #include "gromacs/gpu_utils/cudautils.cuh"
+#include "gromacs/gpu_utils/cuda_arch_utils.cuh"
 #include "gromacs/utility/exceptions.h"
 #include "gromacs/utility/gmxassert.h"
 
 #include "pme.cuh"
 #include "pme-timings.cuh"
 
+//extern "C" __device__ __attribute__((noduplicate)) void __syncthreads();
+
+#define __syncthreads() hc_barrier(CLK_LOCAL_MEM_FENCE)
+
 //! Gathering max block width in warps - picked empirically among 2, 4, 8, 16 for max. occupancy and min. runtime
 constexpr int c_gatherMaxWarpsPerBlock = 4;
 //! Gathering max block size in threads
 constexpr int c_gatherMaxThreadsPerBlock = c_gatherMaxWarpsPerBlock * warp_size;
 //! Gathering min blocks per CUDA multiprocessor - for CC2.x, we just take the CUDA limit of 8 to avoid the warning
-constexpr int c_gatherMinBlocksPerMP = (GMX_PTX_ARCH < 300) ? GMX_CUDA_MAX_BLOCKS_PER_MP : (GMX_CUDA_MAX_THREADS_PER_MP / c_gatherMaxThreadsPerBlock);
+//constexpr int c_gatherMinBlocksPerMP = (GMX_PTX_ARCH < 300) ? GMX_CUDA_MAX_BLOCKS_PER_MP : (GMX_CUDA_MAX_THREADS_PER_MP / c_gatherMaxThreadsPerBlock);
+constexpr int c_gatherMinBlocksPerMP = 16;
 
 /*! \brief
  * An inline CUDA function: unroll the dynamic index accesses to the constant grid sizes to avoid local memory operations.
@@ -157,6 +168,9 @@ __device__ __forceinline__ void reduce_atom_forces(float3 * __restrict__ sm_forc
         __shared__ float  sm_forceReduction[smemReserved + blockSize];
         __shared__ float *sm_forceTemp[DIM];
 
+        __host__ __device__ int min(int arg1, int arg2);
+        __host__ __device__ int max(int arg1, int arg2);
+
         const int         numWarps  = blockSize / smemPerDim;
         const int         minStride = max(1, atomDataSize / numWarps); // order 4: 128 threads => 4, 256 threads => 2, etc
 
@@ -229,13 +243,19 @@ __device__ __forceinline__ void reduce_atom_forces(float3 * __restrict__ sm_forc
  * \tparam[in] wrapY                Tells if the grid is wrapped in the Y dimension.
  * \param[in]  kernelParams         All the PME GPU data.
  */
+//template <
+//    const int order,
+//    const bool overwriteForces,
+//    const bool wrapX,
+//    const bool wrapY
+//    >
+//__launch_bounds__(c_gatherMaxThreadsPerBlock, c_gatherMinBlocksPerMP)
 template <
     const int order,
     const bool overwriteForces,
     const bool wrapX,
     const bool wrapY
     >
-__launch_bounds__(c_gatherMaxThreadsPerBlock, c_gatherMinBlocksPerMP)
 __global__ void pme_gather_kernel(const PmeGpuCudaKernelParams    kernelParams)
 {
     /* Global memory pointers */
@@ -251,10 +271,10 @@ __global__ void pme_gather_kernel(const PmeGpuCudaKernelParams    kernelParams)
     const int    atomDataSize   = PME_SPREADGATHER_THREADS_PER_ATOM; /* Number of data components and threads for a single atom */
     const int    blockSize      = atomsPerBlock * atomDataSize;
 
-    const int    blockIndex = blockIdx.y * gridDim.x + blockIdx.x;
+    const int    blockIndex = hipBlockIdx_y * hipGridDim_x + hipBlockIdx_x;
 
     /* These are the atom indices - for the shared and global memory */
-    const int         atomIndexLocal    = threadIdx.z;
+    const int         atomIndexLocal    = hipThreadIdx_z;
     const int         atomIndexOffset   = blockIndex * atomsPerBlock;
     const int         atomIndexGlobal   = atomIndexOffset + atomIndexLocal;
 
@@ -272,16 +292,16 @@ __global__ void pme_gather_kernel(const PmeGpuCudaKernelParams    kernelParams)
     __shared__ float2 sm_splineParams[splineParamsSize]; /* Theta/dtheta pairs  as .x/.y */
 
     /* Spline Y/Z coordinates */
-    const int ithy = threadIdx.y;
-    const int ithz = threadIdx.x;
+    const int ithy = hipThreadIdx_y;
+    const int ithz = hipThreadIdx_x;
 
     /* These are the spline contribution indices in shared memory */
-    const int splineIndex = threadIdx.y * blockDim.x + threadIdx.x;                  /* Relative to the current particle , 0..15 for order 4 */
-    const int lineIndex   = (threadIdx.z * (blockDim.x * blockDim.y)) + splineIndex; /* And to all the block's particles */
+    const int splineIndex = hipThreadIdx_y * hipBlockDim_x + hipThreadIdx_x;                  /* Relative to the current particle , 0..15 for order 4 */
+    const int lineIndex   = (hipThreadIdx_z * (hipBlockDim_x * hipBlockDim_y)) + splineIndex; /* And to all the block's particles */
 
-    int       threadLocalId = (threadIdx.z * (blockDim.x * blockDim.y))
-        + (threadIdx.y * blockDim.x)
-        + threadIdx.x;
+    int       threadLocalId = (hipThreadIdx_z * (hipBlockDim_x * hipBlockDim_y))
+        + (hipThreadIdx_y * hipBlockDim_x)
+        + hipThreadIdx_x;
 
     /* Staging the atom gridline indices, DIM * atomsPerBlock threads */
     const int localGridlineIndicesIndex  = threadLocalId;

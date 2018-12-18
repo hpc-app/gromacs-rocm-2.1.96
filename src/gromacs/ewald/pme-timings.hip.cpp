@@ -41,6 +41,7 @@
 
 #include "gmxpre.h"
 
+#include <hip/hip_runtime_api.h>
 #include "pme-timings.cuh"
 
 #include "gromacs/utility/gmxassert.h"

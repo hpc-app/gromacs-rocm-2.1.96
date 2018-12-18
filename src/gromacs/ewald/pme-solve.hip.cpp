@@ -1,4 +1,3 @@
-#include "hip/hip_runtime.h"
 /*
  * This file is part of the GROMACS molecular simulation package.
  *
@@ -41,7 +40,8 @@
  */
 
 #include "gmxpre.h"
-
+#define NDEBUG
+#include "hip/hip_runtime.h"
 #include "config.h"
 
 #include "gromacs/gpu_utils/cuda_arch_utils.cuh"

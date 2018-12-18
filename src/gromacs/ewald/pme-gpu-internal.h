@@ -46,7 +46,19 @@
 #ifndef GMX_EWALD_PME_GPU_INTERNAL_H
 #define GMX_EWALD_PME_GPU_INTERNAL_H
 
-#include "gromacs/fft/fft.h"                   // for the gmx_fft_direction enum
+//#include "gromacs/fft/fft.h"                   // for the gmx_fft_direction enum
+
+#ifndef GMX_FFT_DIRECTION
+#define GMX_FFT_DIRECTION
+enum gmx_fft_direction
+{
+    GMX_FFT_FORWARD,         /**< Forward complex-to-complex transform  */
+    GMX_FFT_BACKWARD,        /**< Backward complex-to-complex transform */
+    GMX_FFT_REAL_TO_COMPLEX, /**< Real-to-complex valued FFT            */
+    GMX_FFT_COMPLEX_TO_REAL  /**< Complex-to-real valued FFT            */
+};
+#endif
+
 #include "gromacs/gpu_utils/gpu_macros.h"      // for the CUDA_FUNC_ macros
 #include "gromacs/utility/arrayref.h"
 

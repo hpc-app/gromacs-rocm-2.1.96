@@ -80,8 +80,14 @@ if(GMX_GPU OR GMX_GPU_AUTO)
     endif()
 
    # find_package(CUDA ${REQUIRED_CUDA_VERSION} ${FIND_CUDA_QUIETLY})
-     find_package(HIP)
-     find_package(rocfft)
+     find_package(HIP REQUIRED)
+     if(HIP_FOUND)
+       message(STATUS "Found HIP: " ${HIP_VERSION})
+     else()
+       message(FATAL_ERROR "Could not find HIP. Ensure that HIP is either installed in /opt/rocm/hip or the variable HIP_PATH is set to point to the right location.")
+     endif()
+
+     find_package(rocfft REQUIRED)
      include(rocfft-config)
 endif()
 

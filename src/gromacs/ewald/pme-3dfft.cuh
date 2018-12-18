@@ -47,7 +47,8 @@
 #include <hipfft.h>                  // for the cufft types
 #include <rocfft.h>
 
-
+#ifndef GMX_FFT_DIRECTION
+#define GMX_FFT_DIRECTION 
 enum gmx_fft_direction
 {
     GMX_FFT_FORWARD,         /**< Forward complex-to-complex transform  */
@@ -55,6 +56,7 @@ enum gmx_fft_direction
     GMX_FFT_REAL_TO_COMPLEX, /**< Real-to-complex valued FFT            */
     GMX_FFT_COMPLEX_TO_REAL  /**< Complex-to-real valued FFT            */
 };
+#endif
 
 struct PmeGpu;
 

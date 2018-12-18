@@ -50,11 +50,18 @@
 #include <array>
 #include <set>
 
-#include "gromacs/gpu_utils/cuda_arch_utils.cuh" // for warp_size
+/*#include "gromacs/gpu_utils/cuda_arch_utils.cuh" // for warp_size*/
+
+//static const int warp_size      = 32;
+//static const int warp_size_log2 = 5;
+/*! \brief Bitmask corresponding to all threads active in a warp.
+ *  NOTE that here too we assume 32-wide warps.
+ */
+//static const unsigned int c_fullWarpMask = 0xffffffff;
 
 #include "pme-gpu-internal.h"                    // for the general PME GPU behaviour defines
 #include "pme-timings.cuh"
-
+#include <hcc_detail/math_functions.h> // for isfinite()
 class GpuParallel3dFft;
 
 /* Some defines for PME behaviour follow */

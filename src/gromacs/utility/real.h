@@ -124,7 +124,6 @@ typedef double      real;
 #define GMX_REAL_MAX_SIMD_WIDTH  8
 
 #else /* GMX_DOUBLE */
-
 #ifndef HAVE_REAL
 typedef float           real;
 #define HAVE_REAL

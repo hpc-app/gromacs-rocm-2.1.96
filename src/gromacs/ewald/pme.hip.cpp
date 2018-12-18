@@ -52,6 +52,12 @@
 #include "gromacs/gpu_utils/pmalloc_cuda.h"
 #include "gromacs/utility/gmxassert.h"
 #include "gromacs/utility/smalloc.h"
+const int warp_size      = 32;
+const int warp_size_log2 = 5;
+/*! \brief Bitmask corresponding to all threads active in a warp.
+ *  *  NOTE that here too we assume 32-wide warps.
+ *   */
+const unsigned int c_fullWarpMask = 0xffffffff;
 
 #include "pme.cuh"
 #include "pme-3dfft.cuh"

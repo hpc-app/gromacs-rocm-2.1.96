@@ -93,6 +93,9 @@ typedef struct gmx_fft *
  *  GMX_FFT_FORWARD or GMX_FFT_BACKWARD, and for real-complex transforms you
  *  can only use GMX_FFT_REAL_TO_COMPLEX or GMX_FFT_COMPLEX_TO_REAL.
  */
+#ifndef GMX_FFT_DIRECTION
+#define GMX_FFT_DIRECTION
+
 enum gmx_fft_direction
 {
     GMX_FFT_FORWARD,         /**< Forward complex-to-complex transform  */
@@ -100,7 +103,7 @@ enum gmx_fft_direction
     GMX_FFT_REAL_TO_COMPLEX, /**< Real-to-complex valued FFT            */
     GMX_FFT_COMPLEX_TO_REAL  /**< Complex-to-real valued FFT            */
 };
-
+#endif
 /*! \brief Specifier for FFT flags.
  *
  *  Some FFT libraries (FFTW, in particular) can do timings and other

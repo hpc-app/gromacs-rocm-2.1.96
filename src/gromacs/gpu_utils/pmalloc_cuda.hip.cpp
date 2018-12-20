@@ -39,7 +39,7 @@
  */
 
 #include "gmxpre.h"
-
+#include <hip/hip_runtime.h>
 #include "pmalloc_cuda.h"
 
 #include <stdlib.h>

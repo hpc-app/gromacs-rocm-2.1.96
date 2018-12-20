@@ -40,7 +40,7 @@
  */
 
 #include "gmxpre.h"
-
+#include <hip/hcc_detail/hip_runtime_api.h>
 #include "gpu_utils.h"
 
 #include "config.h"
@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <cuda_profiler_api.h>
+//#include <cuda_profiler_api.h>
 
 #include "gromacs/gpu_utils/cudautils.cuh"
 #include "gromacs/gpu_utils/pmalloc_cuda.h"
@@ -110,7 +110,7 @@ static void checkCompiledTargetCompatibility(const gmx_device_info_t *devInfo)
     assert(devInfo);
 
     hipFuncAttributes attributes;
-    hipError_t        stat = hipFuncGetAttributes(&attributes, k_dummy_test);
+    hipError_t        stat = hipFuncGetAttributes(&attributes, (const void *)k_dummy_test);
 
     if (hipErrorInvalidDeviceFunction == stat)
     {
@@ -255,7 +255,7 @@ static int do_sanity_checks(int dev_id, hipDeviceProp_t *dev_prop)
     }
 
     /* try to execute a dummy kernel */
-    hipLaunchKernelGGL((k_dummy_test), dim3(1), dim3(512), 0, 0, );
+    hipLaunchKernelGGL((k_dummy_test), dim3(1), dim3(512), 0, 0 );
     if (hipDeviceSynchronize() != hipSuccess)
     {
         return -1;
@@ -830,7 +830,8 @@ void get_gpu_device_info_string(char *s, const gmx_gpu_info_t &gpu_info, int ind
         sprintf(s, "#%d: NVIDIA %s, compute cap.: %d.%d, ECC: %3s, stat: %s",
                 dinfo->id, dinfo->prop.name,
                 dinfo->prop.major, dinfo->prop.minor,
-                dinfo->prop.ECCEnabled ? "yes" : " no",
+              //  dinfo->prop.ECCEnabled ? "yes" : " no",
+                "hip does not have ECC check",
                 gpu_detect_res_str[dinfo->stat]);
     }
 }

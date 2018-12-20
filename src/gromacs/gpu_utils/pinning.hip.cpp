@@ -39,7 +39,7 @@
  * \author Mark Abraham <mark.j.abraham@gmail.com>
  */
 #include "gmxpre.h"
-
+#include <hip/hip_runtime.h>
 #include "pinning.h"
 
 #include <cstddef>
@@ -71,7 +71,7 @@ void pinBuffer(void *pointer, std::size_t numBytes) noexcept
 
     // These errors can only arise from a coding error somewhere.
     GMX_RELEASE_ASSERT(stat != hipErrorInvalidValue &&
-                       stat != hipErrorNotSupported &&
+                       stat != hipErrorNotMapped &&
                        stat != hipErrorHostMemoryAlreadyRegistered,
                        formatString("%s %s: %s", errorMessage,
                                     hipGetErrorName(stat), hipGetErrorString(stat)).c_str());

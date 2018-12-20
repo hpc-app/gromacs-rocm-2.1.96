@@ -34,7 +34,9 @@
  */
 
 #include "gmxpre.h"
-
+#include <hip/hip_runtime.h>
+#include <hip/hcc_detail/hip_runtime_api.h>
+#include <hip/hcc_detail/hip_texture_types.h>
 #include "cudautils.cuh"
 
 #include <cassert>
@@ -279,10 +281,13 @@ static void setup1DTexture(const struct texture<T, 1, hipReadModeElementType> *t
     assert(!c_disableCudaTextures);
 
     hipError_t           stat;
-    hipChannelFormatDesc cd;
+    const textureReference* texRefPtr;
+    hipGetTextureReference(&texRefPtr, texRef);
 
+  //  textureReference* texRefPtr2 = texRefPtr;
+    hipChannelFormatDesc cd;
     cd   = hipCreateChannelDesc<T>();
-    stat = hipBindTexture(nullptr, texRef, d_ptr, &cd, sizeInBytes);
+    stat = hipBindTexture(nullptr, const_cast<textureReference*>(texRefPtr), d_ptr, &cd, sizeInBytes);
     CU_RET_ERR(stat, "hipBindTexture failed");
 }
 
@@ -301,7 +306,8 @@ void initParamLookupTable(T                        * &d_ptr,
 
     if (!c_disableCudaTextures)
     {
-        if (use_texobj(devInfo))
+       // if (use_texobj(devInfo))
+        if(1)
         {
             setup1DTexture<T>(texObj, d_ptr, sizeInBytes);
         }

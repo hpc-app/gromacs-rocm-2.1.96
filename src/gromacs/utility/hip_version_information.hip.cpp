@@ -36,7 +36,7 @@
 #include "gmxpre.h"
 
 #include <hip/hip_runtime_api.h>
-#include "cuda_version_information.h"
+#include "hip_version_information.h"
 
 #include <utility>
 

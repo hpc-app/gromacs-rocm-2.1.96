@@ -49,6 +49,7 @@
 
 #if !GMX_NATIVE_WINDOWS
 // for fp exception control stuff
+#include </usr/include/fenv.h>
 #include <fenv.h>
 #endif
 

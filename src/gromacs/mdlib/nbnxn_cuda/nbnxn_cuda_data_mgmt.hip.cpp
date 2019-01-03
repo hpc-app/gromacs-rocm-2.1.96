@@ -39,6 +39,8 @@
  */
 #include "gmxpre.h"
 
+#include "hip/hip_runtime.h"
+#include "hip/hcc_detail/hip_runtime_api.h"
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>

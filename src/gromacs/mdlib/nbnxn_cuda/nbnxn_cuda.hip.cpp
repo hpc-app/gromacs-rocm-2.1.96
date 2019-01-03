@@ -1,4 +1,5 @@
 #include "hip/hip_runtime.h"
+#include "hip/hcc_detail/hip_runtime_api.h"
 /*
  * This file is part of the GROMACS molecular simulation package.
  *
@@ -758,19 +759,19 @@ void nbnxn_cuda_set_cacheconfig(const gmx_device_info_t *devinfo)
             if (devinfo->prop.major >= 3)
             {
                 /* Default kernel on sm 3.x and later 32/32 kB Shared/L1 */
-                hipFuncSetCacheConfig(nb_kfunc_ener_prune_ptr[i][j], hipFuncCachePreferEqual);
-                hipFuncSetCacheConfig(nb_kfunc_ener_noprune_ptr[i][j], hipFuncCachePreferEqual);
-                hipFuncSetCacheConfig(nb_kfunc_noener_prune_ptr[i][j], hipFuncCachePreferEqual);
-                stat = hipFuncSetCacheConfig(nb_kfunc_noener_noprune_ptr[i][j], hipFuncCachePreferEqual);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_ener_prune_ptr[i][j], hipFuncCachePreferEqual);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_ener_noprune_ptr[i][j], hipFuncCachePreferEqual);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_noener_prune_ptr[i][j], hipFuncCachePreferEqual);
+                stat = hipFuncSetCacheConfig((const void *)nb_kfunc_noener_noprune_ptr[i][j], hipFuncCachePreferEqual);
             }
             else
             {
                 /* On Fermi prefer L1 gives 2% higher performance */
                 /* Default kernel on sm_2.x 16/48 kB Shared/L1 */
-                hipFuncSetCacheConfig(nb_kfunc_ener_prune_ptr[i][j], hipFuncCachePreferL1);
-                hipFuncSetCacheConfig(nb_kfunc_ener_noprune_ptr[i][j], hipFuncCachePreferL1);
-                hipFuncSetCacheConfig(nb_kfunc_noener_prune_ptr[i][j], hipFuncCachePreferL1);
-                stat = hipFuncSetCacheConfig(nb_kfunc_noener_noprune_ptr[i][j], hipFuncCachePreferL1);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_ener_prune_ptr[i][j], hipFuncCachePreferL1);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_ener_noprune_ptr[i][j], hipFuncCachePreferL1);
+                hipFuncSetCacheConfig((const void *)nb_kfunc_noener_prune_ptr[i][j], hipFuncCachePreferL1);
+                stat = hipFuncSetCacheConfig((const void *)nb_kfunc_noener_noprune_ptr[i][j], hipFuncCachePreferL1);
             }
             CU_RET_ERR(stat, "hipFuncSetCacheConfig failed");
         }

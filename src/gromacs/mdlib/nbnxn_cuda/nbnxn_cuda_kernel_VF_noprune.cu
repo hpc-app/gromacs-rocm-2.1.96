@@ -34,6 +34,8 @@
  */
 #include "gmxpre.h"
 
+#include "hip/hip_runtime.h"
+#include "hip/hcc_detail/hip_runtime_api.h"
 #include "gromacs/gpu_utils/cudautils.cuh"
 #include "gromacs/mdlib/nbnxn_consts.h"
 #include "gromacs/mdlib/nbnxn_cuda/nbnxn_cuda_kernel_utils.cuh"

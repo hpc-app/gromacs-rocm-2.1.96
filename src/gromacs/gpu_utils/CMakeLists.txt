@@ -31,7 +31,7 @@
 #
 # To help us fund GROMACS development, we humbly ask that you cite
 # the research papers on the package. Check out http://www.gromacs.org.
-file(GLOB GPU_UTIL_SOURCES cudautils.hip.cpp gpu_utils.cpp gpu_utils.hip.cpp hostallocator.cpp pinning.hip.cpp pmalloc_cuda.hip.cpp)
+file(GLOB GPU_UTIL_SOURCES cudautils.hip.cpp  gpu_utils.hip.cpp hostallocator.cpp pinning.hip.cpp pmalloc_cuda.hip.cpp)
 gmx_add_libgromacs_sources(
         hostallocator.cpp
         )
@@ -49,7 +49,7 @@ elseif(GMX_USE_HIP)
         pinning.hip.cpp
         pmalloc_cuda.hip.cpp
         )
-   message(status " gpu_utilities here")
+ #  message(status " gpu_utilities here")
 else()
     gmx_add_libgromacs_sources(
         gpu_utils.cpp

@@ -104,6 +104,12 @@ static bool cudaProfilerRun      = ((getenv("NVPROF_ID") != NULL));
 static __global__ void k_dummy_test(void)
 {
 }
+//static __global__ void k_dummy_test(float *in, float *out, int N)
+//{
+//    int tid = hipThreadIdx_x + hipBlockIdx_x * hipBlockDim_x;
+//    if(tid < N)
+//      out[tid] = 2 * in[tid];
+//}
 
 static void checkCompiledTargetCompatibility(const gmx_device_info_t *devInfo)
 {
@@ -255,12 +261,32 @@ static int do_sanity_checks(int dev_id, hipDeviceProp_t *dev_prop)
     }
 
     /* try to execute a dummy kernel */
+/*    float h_in[100], h_out[100];
+    for(int i = 0; i < 100; ++i)
+    {
+        h_in[i] = i;
+        h_out[i] = 0;
+    }
+    float *d_in, *d_out;
+    hipMalloc((void**)&d_in, sizeof(float) * 100);
+    hipMalloc((void**)&d_out, sizeof(float) * 100);
+
+    hipMemcpy(d_in, h_in, sizeof(float) * 100, hipMemcpyHostToDevice);
+    fprintf(stdout, "execute empty kernel\n");
+*/
     hipLaunchKernelGGL((k_dummy_test), dim3(1), dim3(512), 0, 0 );
     if (hipDeviceSynchronize() != hipSuccess)
     {
+        fprintf(stdout, "execute empty kernel failed\n");
         return -1;
     }
-
+  //  hipMemcpy(h_out, d_out, sizeof(float) * 100, hipMemcpyDeviceToHost);
+ //   for(int i = 0; i < 100; i+=10)
+ //   {
+ //       fprintf(stdout, "%f\n", h_out[i]); 
+ //   }
+ //   hipFree(d_in);
+ //   hipFree(d_out);
     /* destroy context if we created one */
     if (id != -1)
     {

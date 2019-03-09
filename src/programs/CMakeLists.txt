@@ -65,15 +65,15 @@ else()
         file(GLOB VIEW_SOURCES view/view.cpp)
     endif()
     add_library(view_objlib OBJECT ${VIEW_SOURCES})
- #   add_executable(gmx
- #       ${GMX_MAIN_SOURCES}
- #       $<TARGET_OBJECTS:mdrun_objlib>
- #       $<TARGET_OBJECTS:view_objlib>)
-
-       hip_add_executable(gmx
+    add_executable(gmx
         ${GMX_MAIN_SOURCES}
         $<TARGET_OBJECTS:mdrun_objlib>
         $<TARGET_OBJECTS:view_objlib>)
+
+ #      hip_add_executable(gmx
+ #       ${GMX_MAIN_SOURCES}
+ #       $<TARGET_OBJECTS:mdrun_objlib>
+ #       $<TARGET_OBJECTS:view_objlib>)
  
    target_link_libraries(gmx libgromacs
         ${GMX_COMMON_LIBRARIES}

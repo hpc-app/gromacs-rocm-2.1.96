@@ -694,8 +694,10 @@ void nbnxn_gpu_launch_cpyback(gmx_nbnxn_cuda_t       *nb,
     }
 
     /* DtoH f */
+//    cu_copy_D2H_async(nbatom->out[0].f + adat_begin * 3, adat->f + adat_begin,
+//                      (adat_len)*sizeof(*adat->f), stream);                
     cu_copy_D2H_async(nbatom->out[0].f + adat_begin * 3, adat->f + adat_begin,
-                      (adat_len)*sizeof(*adat->f), stream);
+                        (adat_len)* 12, stream);       //in Rocm, sizeof(float3) returns 16, which will cause GPU memory fault here.
 
     /* After the non-local D2H is launched the nonlocal_done event can be
        recorded which signals that the local D2H can proceed. This event is not

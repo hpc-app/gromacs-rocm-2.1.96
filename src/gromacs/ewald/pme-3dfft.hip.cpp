@@ -89,16 +89,26 @@ GpuParallel3dFft::GpuParallel3dFft(const PmeGpu *pmeGpu)
      */
 
     const int                 rank = 3, batch = 1;
+//    result = hipfftPlanMany(&planR2C_, rank, realGridSize,
+//                           realGridSizePadded, 1, realGridSizePaddedTotal,
+//                           complexGridSizePadded, 1, complexGridSizePaddedTotal,
+//                           HIPFFT_R2C,
+//                           batch);
     result = hipfftPlanMany(&planR2C_, rank, realGridSize,
-                           realGridSizePadded, 1, realGridSizePaddedTotal,
-                           complexGridSizePadded, 1, complexGridSizePaddedTotal,
+                           NULL, 1, realGridSizePaddedTotal,
+                           NULL, 1, complexGridSizePaddedTotal,
                            HIPFFT_R2C,
                            batch);
     handleCufftError(result, "cufftPlanMany R2C plan failure");
 
+//    result = hipfftPlanMany(&planC2R_, rank, realGridSize,
+//                           complexGridSizePadded, 1, complexGridSizePaddedTotal,
+//                           realGridSizePadded, 1, realGridSizePaddedTotal,
+//                           HIPFFT_C2R,
+//                           batch);
     result = hipfftPlanMany(&planC2R_, rank, realGridSize,
-                           complexGridSizePadded, 1, complexGridSizePaddedTotal,
-                           realGridSizePadded, 1, realGridSizePaddedTotal,
+                           NULL, 1, complexGridSizePaddedTotal,
+                           NULL, 1, realGridSizePaddedTotal,
                            HIPFFT_C2R,
                            batch);
     handleCufftError(result, "cufftPlanMany C2R plan failure");

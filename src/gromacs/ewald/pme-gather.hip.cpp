@@ -168,8 +168,8 @@ __device__ __forceinline__ void reduce_atom_forces(float3 * __restrict__ sm_forc
         __shared__ float  sm_forceReduction[smemReserved + blockSize];
         __shared__ float *sm_forceTemp[DIM];
 
-        __host__ __device__ int min(int arg1, int arg2);
-        __host__ __device__ int max(int arg1, int arg2);
+  //      __host__ __device__ int min(int arg1, int arg2);
+  //      __host__ __device__ int max(int arg1, int arg2);
 
         const int         numWarps  = blockSize / smemPerDim;
         const int         minStride = max(1, atomDataSize / numWarps); // order 4: 128 threads => 4, 256 threads => 2, etc

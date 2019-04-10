@@ -198,8 +198,11 @@ void pme_gpu_copy_input_coordinates(const PmeGpu *pmeGpu, const rvec *h_coordina
     GMX_RELEASE_ASSERT(false, "Only single precision is supported");
     GMX_UNUSED_VALUE(h_coordinates);
 #else
+#include<stdio.h>
+printf("2.1.1, sizeof(rvec) is %d, sizeof(rvec[0]) is %d\n", sizeof(rvec), sizeof(rvec[0]));
     cu_copy_H2D(pmeGpu->kernelParams->atoms.d_coordinates, const_cast<rvec *>(h_coordinates),
                 pmeGpu->kernelParams->atoms.nAtoms * sizeof(rvec), pmeGpu->settings.transferKind, pmeGpu->archSpecific->pmeStream);
+printf("2.1.2\n");
 #endif
 }
 

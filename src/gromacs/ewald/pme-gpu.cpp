@@ -222,7 +222,10 @@ void pme_gpu_launch_spread(gmx_pme_t            *pme,
     // The only spot of PME GPU where LAUNCH_GPU (sub)counter increases call-count
     wallcycle_start(wcycle, ewcLAUNCH_GPU);
     wallcycle_sub_start(wcycle, ewcsLAUNCH_GPU_PME);
+#include <stdio.h>
+printf("2.1\n");
     pme_gpu_copy_input_coordinates(pmeGpu, x);
+printf("2.2\n");
     wallcycle_sub_stop(wcycle, ewcsLAUNCH_GPU_PME);
     wallcycle_stop(wcycle, ewcLAUNCH_GPU);
 
@@ -235,7 +238,9 @@ void pme_gpu_launch_spread(gmx_pme_t            *pme,
         const bool spreadCharges  = true;
         wallcycle_start_nocount(wcycle, ewcLAUNCH_GPU);
         wallcycle_sub_start_nocount(wcycle, ewcsLAUNCH_GPU_PME);
+printf("2.3\n");
         pme_gpu_spread(pmeGpu, gridIndex, fftgrid, computeSplines, spreadCharges);
+printf("2.4\n");
         wallcycle_sub_stop(wcycle, ewcsLAUNCH_GPU_PME);
         wallcycle_stop(wcycle, ewcLAUNCH_GPU);
     }

@@ -904,9 +904,11 @@ static inline void launchPmeGpuSpread(gmx_pme_t      *pmedata,
     int pmeFlags = GMX_PME_SPREAD | GMX_PME_SOLVE;
     pmeFlags |= (flags & GMX_FORCE_FORCES) ? GMX_PME_CALC_F : 0;
     pmeFlags |= (flags & GMX_FORCE_VIRIAL) ? GMX_PME_CALC_ENER_VIR : 0;
-
+printf("111111111111111111111111\n");
     pme_gpu_prepare_computation(pmedata, flags & GMX_FORCE_DYNAMICBOX, box, wcycle, pmeFlags);
+printf("22222222222222222222222\n");
     pme_gpu_launch_spread(pmedata, x, wcycle);
+printf("3333333333333333333333\n");
 }
 
 /*! \brief Launch the FFT and gather stages of PME GPU

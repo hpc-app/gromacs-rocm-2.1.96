@@ -1,4 +1,5 @@
 #include "hip/hip_runtime.h"
+#include<stdio.h>
 /*
  * This file is part of the GROMACS molecular simulation package.
  *
@@ -448,6 +449,12 @@ template <
 __launch_bounds__(c_spreadMaxThreadsPerBlock)
 __global__ void pme_spline_and_spread_kernel(const PmeGpuCudaKernelParams kernelParams)
 {
+
+    const int printThread = threadIdx.x + threadIdx.y + threadIdx.z + blockIdx.x + blockIdx.y + blockIdx.z;
+    if(printThread == 0)
+    {
+        printf("2.3.1.0\n");
+    }
     const int        atomsPerBlock = c_spreadMaxThreadsPerBlock / PME_SPREADGATHER_THREADS_PER_ATOM;
     // Gridline indices, ivec
     __shared__ int   sm_gridlineIndices[atomsPerBlock * DIM];
@@ -469,7 +476,8 @@ __global__ void pme_spline_and_spread_kernel(const PmeGpuCudaKernelParams kernel
 
     /* Staging coefficients/charges for both spline and spread */
     pme_gpu_stage_atom_data<float, atomsPerBlock, 1>(kernelParams, sm_coefficients, kernelParams.atoms.d_coefficients);
-
+if(printThread == 0)
+printf("2.3.1.01\n");
     if (computeSplines)
     {
         /* Staging coordinates */
@@ -477,8 +485,12 @@ __global__ void pme_spline_and_spread_kernel(const PmeGpuCudaKernelParams kernel
         pme_gpu_stage_atom_data<float, atomsPerBlock, DIM>(kernelParams, sm_coordinates, kernelParams.atoms.d_coordinates);
 
         __syncthreads();
-        calculate_splines<order, atomsPerBlock>(kernelParams, atomIndexOffset, (const float3 *)sm_coordinates,
-                                                sm_coefficients, sm_theta, sm_gridlineIndices);
+if(printThread == 0)
+printf("2.3.1.1\n");
+ //       calculate_splines<order, atomsPerBlock>(kernelParams, atomIndexOffset, (const float3 *)sm_coordinates,
+ //                                                sm_coefficients, sm_theta, sm_gridlineIndices);
+if(printThread == 0)
+printf("2.3.1.2\n");
         gmx_syncwarp();
     }
     else
@@ -498,7 +510,7 @@ __global__ void pme_spline_and_spread_kernel(const PmeGpuCudaKernelParams kernel
     /* Spreading */
     if (spreadCharges)
     {
-        spread_charges<order, wrapX, wrapY>(kernelParams, atomIndexOffset, sm_coefficients, sm_gridlineIndices, sm_theta);
+//        spread_charges<order, wrapX, wrapY>(kernelParams, atomIndexOffset, sm_coefficients, sm_gridlineIndices, sm_theta);
     }
 }
 
@@ -542,14 +554,18 @@ void pme_gpu_spread(const PmeGpu    *pmeGpu,
                 if (spreadCharges)
                 {
                     pme_gpu_start_timing(pmeGpu, gtPME_SPLINEANDSPREAD);
+printf("2.3.1, wrapX is %d, wrapY is %d\n", wrapX, wrapY);
                     hipLaunchKernelGGL((pme_spline_and_spread_kernel<4, true, true, wrapX, wrapY>), dim3(dimGrid), dim3(dimBlock), 0, stream, *kernelParamsPtr);
+printf("2.3.2\n");
                     CU_LAUNCH_ERR("pme_spline_and_spread_kernel");
                     pme_gpu_stop_timing(pmeGpu, gtPME_SPLINEANDSPREAD);
                 }
                 else
                 {
                     pme_gpu_start_timing(pmeGpu, gtPME_SPLINE);
+printf("2.3.3\n");
                     hipLaunchKernelGGL((pme_spline_and_spread_kernel<4, true, false, wrapX, wrapY>), dim3(dimGrid), dim3(dimBlock), 0, stream, *kernelParamsPtr);
+printf("2.3.4\n");
                     CU_LAUNCH_ERR("pme_spline_and_spread_kernel");
                     pme_gpu_stop_timing(pmeGpu, gtPME_SPLINE);
                 }
@@ -557,7 +573,9 @@ void pme_gpu_spread(const PmeGpu    *pmeGpu,
             else
             {
                 pme_gpu_start_timing(pmeGpu, gtPME_SPREAD);
+printf("2.3.5\n");
                 hipLaunchKernelGGL((pme_spline_and_spread_kernel<4, false, true, wrapX, wrapY>), dim3(dimGrid), dim3(dimBlock), 0, stream, *kernelParamsPtr);
+printf("2.3.6\n");
                 CU_LAUNCH_ERR("pme_spline_and_spread_kernel");
                 pme_gpu_stop_timing(pmeGpu, gtPME_SPREAD);
             }
@@ -571,7 +589,9 @@ void pme_gpu_spread(const PmeGpu    *pmeGpu,
     const bool copyBackGrid = spreadCharges && (pme_gpu_is_testing(pmeGpu) || !pme_gpu_performs_FFT(pmeGpu));
     if (copyBackGrid)
     {
+printf("2.3.7\n");
         pme_gpu_copy_output_spread_grid(pmeGpu, h_grid);
+printf("2.2.8\n");
     }
     const bool copyBackAtomData = computeSplines && (pme_gpu_is_testing(pmeGpu) || !pme_gpu_performs_gather(pmeGpu));
     if (copyBackAtomData)

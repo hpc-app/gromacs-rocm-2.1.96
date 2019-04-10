@@ -66,6 +66,8 @@ GpuParallel3dFft::GpuParallel3dFft(const PmeGpu *pmeGpu)
         realGridSize[i]          = kernelParamsPtr->grid.realGridSize[i];
         realGridSizePadded[i]    = kernelParamsPtr->grid.realGridSizePadded[i];
         complexGridSizePadded[i] = kernelParamsPtr->grid.complexGridSizePadded[i];
+#include <cstdio>
+        printf("realGridSize[%d] is %d, realGridSizePadded[%d] is %d, complexGridSizePadded[%d] is %d\n", i, realGridSize[i], i, realGridSizePadded[i], i, complexGridSizePadded[i]);
     }
 
     GMX_RELEASE_ASSERT(!pme_gpu_uses_dd(pmeGpu), "FFT decomposition not implemented");
@@ -94,6 +96,8 @@ GpuParallel3dFft::GpuParallel3dFft(const PmeGpu *pmeGpu)
 //                           complexGridSizePadded, 1, complexGridSizePaddedTotal,
 //                           HIPFFT_R2C,
 //                           batch);
+    #include <cstdio>
+    printf("realGridSizePaddedTotal is %d, complexGridSizePaddedTotal is %d\n", realGridSizePaddedTotal, complexGridSizePaddedTotal);
     result = hipfftPlanMany(&planR2C_, rank, realGridSize,
                            NULL, 1, realGridSizePaddedTotal,
                            NULL, 1, complexGridSizePaddedTotal,

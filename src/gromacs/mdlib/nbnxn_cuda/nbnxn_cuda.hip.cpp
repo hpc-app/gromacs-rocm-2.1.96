@@ -699,6 +699,24 @@ void nbnxn_gpu_launch_cpyback(gmx_nbnxn_cuda_t       *nb,
     cu_copy_D2H_async(nbatom->out[0].f + adat_begin * 3, adat->f + adat_begin,
                         (adat_len)* 12, stream);       //in Rocm, sizeof(float3) returns 16, which will cause GPU memory fault here.
 
+//// trunction will obviously cause wrong computing result, but the following workaround does not solve the probles either/////
+/*real *tmp_mem;
+ * size_t tmp_bytes = sizeof(float3) * (adat_len);
+ * tmp_mem = (real *)malloc(tmp_bytes);
+ * */
+/*cu_copy_D2H_sync(tmp_mem, adat->f + adat_begin, (adat_len)* sizeof(*adat->f));
+ *
+ * int iter_num = tmp_bytes / sizeof(real);
+ * real *h_dist = nbatom->out[0].f + adat_begin * 3;
+ * for(int i = 0, j = 0; j < iter_num; ++i, ++j)
+ * {
+ *     h_dist[i] = tmp_mem[j];
+ *         if(j % 4 == 3)
+ *         --i;
+ * }
+*/
+
+
     /* After the non-local D2H is launched the nonlocal_done event can be
        recorded which signals that the local D2H can proceed. This event is not
        placed after the non-local kernel because we want the non-local data

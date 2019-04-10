@@ -135,7 +135,7 @@ PinningPolicy HostAllocationPolicy::pinningPolicy() const
 
 void HostAllocationPolicy::setPinningPolicy(PinningPolicy pinningPolicy)
 {
-    if (GMX_GPU != GMX_GPU_CUDA)
+    if (GMX_GPU != GMX_GPU_HIP)
     {
         GMX_RELEASE_ASSERT(pinningPolicy == PinningPolicy::CannotBePinned,
                            "A suitable build of GROMACS (e.g. with CUDA) is required for a "
@@ -154,7 +154,7 @@ void HostAllocationPolicy::pin() const noexcept
         // is empty, or it is already pinned.
         return;
     }
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
     pinBuffer(impl_->pointer_, impl_->numBytes_);
     impl_->pinnedPointer_ = impl_->pointer_;
 #else
@@ -173,7 +173,7 @@ void HostAllocationPolicy::unpin() const noexcept
         return;
     }
 
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
     // Note that if the caller deactivated pinning mode, we still want
     // to be able to unpin if the allocation is still pinned.
 

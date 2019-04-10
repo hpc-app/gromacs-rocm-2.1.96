@@ -31,7 +31,7 @@
 #
 # To help us fund GROMACS development, we humbly ask that you cite
 # the research papers on the package. Check out http://www.gromacs.org.
-
+file(GLOB GPU_UTIL_SOURCES cudautils.hip.cpp  gpu_utils.hip.cpp hostallocator.cpp pinning.hip.cpp pmalloc_cuda.hip.cpp)
 gmx_add_libgromacs_sources(
         hostallocator.cpp
         )
@@ -42,19 +42,20 @@ if(GMX_USE_OPENCL)
         ocl_caching.cpp
         oclutils.cpp
         )
-elseif(GMX_USE_CUDA)
+elseif(GMX_USE_HIP)
     gmx_add_libgromacs_sources(
-        cudautils.cu
-        gpu_utils.cu
-        pinning.cu
-        pmalloc_cuda.cu
+        cudautils.hip.cpp
+        gpu_utils.hip.cpp
+        pinning.hip.cpp
+        pmalloc_cuda.hip.cpp
         )
+ #  message(status " gpu_utilities here")
 else()
     gmx_add_libgromacs_sources(
         gpu_utils.cpp
         )
 endif()
-
+set(LIBGROMACS_SOURCES ${LIBGROMACS_SOURCES} ${GPU_UTIL_SOURCES} PARENT_SCOPE)
 # workaround for the state - host allocator dependency
 gmx_install_headers(hostallocator.h)
 

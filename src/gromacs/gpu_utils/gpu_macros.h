@@ -91,7 +91,7 @@
 #define OPENCL_FUNC_TERM_WITH_RETURN(arg) REAL_FUNC_TERM_WITH_RETURN(arg)
 
 #  endif
-#  if GMX_GPU == GMX_GPU_CUDA
+#  if GMX_GPU == GMX_GPU_HIP
 
 /* CUDA support is enabled, so OpenCL-specific functions need empty
  * implementations, while CUDA-specific functions will have real

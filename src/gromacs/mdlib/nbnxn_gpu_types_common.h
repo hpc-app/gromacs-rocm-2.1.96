@@ -48,7 +48,7 @@
 #include "gromacs/gpu_utils/gpuregiontimer_ocl.h"
 #endif
 
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
 #include "gromacs/gpu_utils/gpuregiontimer.cuh"
 #endif
 

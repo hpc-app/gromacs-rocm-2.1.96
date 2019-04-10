@@ -44,7 +44,7 @@
 
 #include "config.h"
 
-#if GMX_GPU == GMX_GPU_CUDA
+#if GMX_GPU == GMX_GPU_HIP
 #include "nbnxn_cuda/nbnxn_cuda_types.h"
 #endif
 

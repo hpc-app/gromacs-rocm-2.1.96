@@ -37,7 +37,7 @@
  *  \brief
  *  Utility constant and function declaration for the CUDA non-bonded kernels.
  *  This header should be included once at the top level, just before the
- *  kernels are included (has to be preceded by nbnxn_cuda_types.h).
+ *  kernels are included (has to be preceded by nbnxn_cuda_types.hip.h).
  *
  *  \author Szilárd Páll <pall.szilard@gmail.com>
  *  \ingroup module_mdlib
@@ -53,7 +53,7 @@
 #include "gromacs/gpu_utils/cuda_kernel_utils.cuh"
 #include "gromacs/gpu_utils/vectype_ops.cuh"
 
-#include "nbnxn_cuda_types.h"
+#include "nbnxn_cuda_types.hip.h"
 
 #ifndef NBNXN_CUDA_KERNEL_UTILS_CUH
 #define NBNXN_CUDA_KERNEL_UTILS_CUH

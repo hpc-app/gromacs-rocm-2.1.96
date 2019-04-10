@@ -45,38 +45,38 @@ __forceinline__ __host__ __device__ float3 make_float3(float4 a)
 {
     return make_float3(a.x, a.y, a.z);
 }
-__forceinline__ __host__ __device__ float3 operator-(float3 &a)
-{
-    return make_float3(-a.x, -a.y, -a.z);
-}
-__forceinline__ __host__ __device__ float3 operator+(float3 a, float3 b)
-{
-    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
-}
-__forceinline__ __host__ __device__ float3 operator-(float3 a, float3 b)
-{
-    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
-}
-__forceinline__ __host__ __device__ float3 operator*(float3 a, float k)
-{
-    return make_float3(k * a.x, k * a.y, k * a.z);
-}
-__forceinline__ __host__ __device__ float3 operator*(float k, float3 a)
-{
-    return make_float3(k * a.x, k * a.y, k * a.z);
-}
-__forceinline__ __host__ __device__ void operator += (float3 &a, float3 b)
-{
-    a.x += b.x; a.y += b.y; a.z += b.z;
-}
+//__forceinline__ __host__ __device__ float3 operator-(float3 &a)
+//{
+//    return make_float3(-a.x, -a.y, -a.z);
+//}
+//__forceinline__ __host__ __device__ float3 operator+(float3 a, float3 b)
+//{
+//    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+//}
+//__forceinline__ __host__ __device__ float3 operator-(float3 a, float3 b)
+//{
+//    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
+//}
+//__forceinline__ __host__ __device__ float3 operator*(float3 a, float k)
+//{
+//    return make_float3(k * a.x, k * a.y, k * a.z);
+//}
+//__forceinline__ __host__ __device__ float3 operator*(float k, float3 a)
+//{
+//    return make_float3(k * a.x, k * a.y, k * a.z);
+//}
+//__forceinline__ __host__ __device__ void operator += (float3 &a, float3 b)
+//{
+//    a.x += b.x; a.y += b.y; a.z += b.z;
+//}
 __forceinline__ __host__ __device__ void operator += (float3 &a, float4 b)
 {
     a.x += b.x; a.y += b.y; a.z += b.z;
 }
-__forceinline__ __host__ __device__ void operator -= (float3 &a, float3 b)
-{
-    a.x -= b.x; a.y -= b.y; a.z -= b.z;
-}
+//__forceinline__ __host__ __device__ void operator -= (float3 &a, float3 b)
+//{
+//    a.x -= b.x; a.y -= b.y; a.z -= b.z;
+//}
 __forceinline__ __host__ __device__ float norm(float3 a)
 {
     return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
@@ -89,14 +89,14 @@ __forceinline__ __host__ __device__ float dist3(float3 a, float3 b)
 {
     return norm(b - a);
 }
-__forceinline__ __host__ __device__ float3 operator*(float3 a, float3 b)
-{
-    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
-}
-__forceinline__ __host__ __device__ void operator *= (float3 &a, float3 b)
-{
-    a.x *= b.x; a.y *= b.y; a.z *= b.z;
-}
+//__forceinline__ __host__ __device__ float3 operator*(float3 a, float3 b)
+//{
+//    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+//}
+//__forceinline__ __host__ __device__ void operator *= (float3 &a, float3 b)
+//{
+//    a.x *= b.x; a.y *= b.y; a.z *= b.z;
+//}
 __forceinline__ __device__ void atomicAdd(float3 *addr, float3 val)
 {
     atomicAdd(&addr->x, val.x);
@@ -114,26 +114,26 @@ __forceinline__ __host__ __device__ float4 make_float4(float3 a)
 {
     return make_float4(a.x, a.y, a.z, 0.0f);
 }
-__forceinline__ __host__ __device__ float4 operator+(float4 a, float4 b)
-{
-    return make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-}
+//__forceinline__ __host__ __device__ float4 operator+(float4 a, float4 b)
+//{
+//    return make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+//}
 __forceinline__ __host__ __device__ float4 operator+(float4 a, float3 b)
 {
     return make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w);
 }
-__forceinline__ __host__ __device__ float4 operator-(float4 a, float4 b)
-{
-    return make_float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
-}
-__forceinline__ __host__ __device__ float4 operator*(float4 a, float k)
-{
-    return make_float4(k * a.x, k * a.y, k * a.z, k * a.w);
-}
-__forceinline__ __host__ __device__ void operator += (float4 &a, float4 b)
-{
-    a.x += b.x; a.y += b.y; a.z += b.z; a.w += b.w;
-}
+//__forceinline__ __host__ __device__ float4 operator-(float4 a, float4 b)
+//{
+//    return make_float4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+//}
+//__forceinline__ __host__ __device__ float4 operator*(float4 a, float k)
+//{
+//    return make_float4(k * a.x, k * a.y, k * a.z, k * a.w);
+//}
+//__forceinline__ __host__ __device__ void operator += (float4 &a, float4 b)
+//{
+//    a.x += b.x; a.y += b.y; a.z += b.z; a.w += b.w;
+//}
 __forceinline__ __host__ __device__ void operator += (float4 &a, float3 b)
 {
     a.x += b.x; a.y += b.y; a.z += b.z;

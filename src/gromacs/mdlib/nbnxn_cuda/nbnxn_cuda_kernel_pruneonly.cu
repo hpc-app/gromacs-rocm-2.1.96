@@ -34,6 +34,8 @@
  */
 #include "gmxpre.h"
 
+#include "hip/hip_runtime.h"
+#include "hip/hcc_detail/hip_runtime_api.h"
 #include "nbnxn_cuda_kernel_pruneonly.cuh"
 
 #ifndef FUNCTION_DECLARATION_ONLY

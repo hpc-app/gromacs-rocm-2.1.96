@@ -236,7 +236,7 @@
 
 /* Define constants useful for handling GPU support */
 #define GMX_GPU_NONE   0
-#define GMX_GPU_CUDA   1
+#define GMX_GPU_HIP   1
 #define GMX_GPU_OPENCL 2
 /* Which kind of GPU support is configured */
 #define GMX_GPU @GMX_GPU_ACCELERATION_FRAMEWORK@

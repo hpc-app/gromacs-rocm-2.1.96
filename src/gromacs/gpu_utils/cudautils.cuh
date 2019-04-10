@@ -68,8 +68,8 @@ static inline void ensureNoPendingCudaError(const char *errorMessage)
 {
     // Ensure there is no pending error that would otherwise affect
     // the behaviour of future error handling.
-    cudaError_t stat = cudaGetLastError();
-    if (stat == cudaSuccess)
+    hipError_t stat = hipGetLastError();
+    if (stat == hipSuccess)
     {
         return;
     }
@@ -78,8 +78,8 @@ static inline void ensureNoPendingCudaError(const char *errorMessage)
     // what is appropriate to do about it, so assert only for debug
     // builds.
     auto fullMessage = formatString("%s An unhandled error from a previous CUDA operation was detected. %s: %s",
-                                    errorMessage, cudaGetErrorName(stat), cudaGetErrorString(stat));
-    GMX_ASSERT(stat == cudaSuccess, fullMessage.c_str());
+                                    errorMessage, hipGetErrorName(stat), hipGetErrorString(stat));
+    GMX_ASSERT(stat == hipSuccess, fullMessage.c_str());
     // TODO When we evolve a better logging framework, use that
     // for release-build error reporting.
     gmx_warning(fullMessage.c_str());
@@ -108,18 +108,18 @@ enum class GpuApiCallBehavior;
 /*! Check for CUDA error on the return status of a CUDA RT API call. */
 #define CU_RET_ERR(status, msg) \
     do { \
-        if (status != cudaSuccess) \
+        if (status != hipSuccess) \
         { \
-            gmx_fatal(FARGS, "%s: %s\n", msg, cudaGetErrorString(status)); \
+            gmx_fatal(FARGS, "%s: %s\n", msg, hipGetErrorString(status)); \
         } \
     } while (0)
 
 /*! Check for any previously occurred uncaught CUDA error. */
 #define CU_CHECK_PREV_ERR() \
     do { \
-        cudaError_t _CU_CHECK_PREV_ERR_status = cudaGetLastError(); \
-        if (_CU_CHECK_PREV_ERR_status != cudaSuccess) { \
-            gmx_warning("Just caught a previously occurred CUDA error (%s), will try to continue.", cudaGetErrorString(_CU_CHECK_PREV_ERR_status)); \
+        hipError_t _CU_CHECK_PREV_ERR_status = hipGetLastError(); \
+        if (_CU_CHECK_PREV_ERR_status != hipSuccess) { \
+            gmx_warning("Just caught a previously occurred CUDA error (%s), will try to continue.", hipGetErrorString(_CU_CHECK_PREV_ERR_status)); \
         } \
     } while (0)
 
@@ -127,9 +127,9 @@ enum class GpuApiCallBehavior;
    -- aimed at use after kernel calls. */
 #define CU_LAUNCH_ERR(msg) \
     do { \
-        cudaError_t _CU_LAUNCH_ERR_status = cudaGetLastError(); \
-        if (_CU_LAUNCH_ERR_status != cudaSuccess) { \
-            gmx_fatal(FARGS, "Error while launching kernel %s: %s\n", msg, cudaGetErrorString(_CU_LAUNCH_ERR_status)); \
+        hipError_t _CU_LAUNCH_ERR_status = hipGetLastError(); \
+        if (_CU_LAUNCH_ERR_status != hipSuccess) { \
+            gmx_fatal(FARGS, "Error while launching kernel %s: %s\n", msg, hipGetErrorString(_CU_LAUNCH_ERR_status)); \
         } \
     } while (0)
 
@@ -137,9 +137,9 @@ enum class GpuApiCallBehavior;
    -- aimed at use after kernel calls. */
 #define CU_LAUNCH_ERR_SYNC(msg) \
     do { \
-        cudaError_t _CU_SYNC_LAUNCH_ERR_status = cudaThreadSynchronize(); \
-        if (_CU_SYNC_LAUNCH_ERR_status != cudaSuccess) { \
-            gmx_fatal(FARGS, "Error while launching kernel %s: %s\n", msg, cudaGetErrorString(_CU_SYNC_LAUNCH_ERR_status)); \
+        hipError_t _CU_SYNC_LAUNCH_ERR_status = hipDeviceSynchronize(); \
+        if (_CU_SYNC_LAUNCH_ERR_status != hipSuccess) { \
+            gmx_fatal(FARGS, "Error while launching kernel %s: %s\n", msg, hipGetErrorString(_CU_SYNC_LAUNCH_ERR_status)); \
         } \
     } while (0)
 
@@ -164,7 +164,7 @@ enum class GpuApiCallBehavior;
 struct gmx_device_info_t
 {
     int                 id;                      /* id of the CUDA device */
-    cudaDeviceProp      prop;                    /* CUDA device properties */
+    hipDeviceProp_t      prop;                    /* CUDA device properties */
     int                 stat;                    /* result of the device check */
     unsigned int        nvml_orig_app_sm_clock;  /* The original SM clock before we changed it */
     unsigned int        nvml_orig_app_mem_clock; /* The original memory clock before we changed it */
@@ -182,25 +182,25 @@ struct gmx_device_info_t
  *
  *  The copy is launched in stream s or if not specified, in stream 0.
  */
-int cu_copy_D2H(void *h_dest, void *d_src, size_t bytes, GpuApiCallBehavior transferKind, cudaStream_t s /*= 0*/);
+int cu_copy_D2H(void *h_dest, void *d_src, size_t bytes, GpuApiCallBehavior transferKind, hipStream_t s /*= 0*/);
 
 /*! Launches synchronous host to device memory copy in stream 0. */
 int cu_copy_D2H_sync(void * /*h_dest*/, void * /*d_src*/, size_t /*bytes*/);
 
 /*! Launches asynchronous host to device memory copy in stream s. */
-int cu_copy_D2H_async(void * /*h_dest*/, void * /*d_src*/, size_t /*bytes*/, cudaStream_t /*s = 0*/);
+int cu_copy_D2H_async(void * /*h_dest*/, void * /*d_src*/, size_t /*bytes*/, hipStream_t /*s = 0*/);
 
 /*! Launches synchronous or asynchronous host to device memory copy.
  *
  *  The copy is launched in stream s or if not specified, in stream 0.
  */
-int cu_copy_H2D(void *d_dest, void *h_src, size_t bytes, GpuApiCallBehavior transferKind, cudaStream_t /*s = 0*/);
+int cu_copy_H2D(void *d_dest, void *h_src, size_t bytes, GpuApiCallBehavior transferKind, hipStream_t /*s = 0*/);
 
 /*! Launches synchronous host to device memory copy. */
 int cu_copy_H2D_sync(void * /*d_dest*/, void * /*h_src*/, size_t /*bytes*/);
 
 /*! Launches asynchronous host to device memory copy in stream s. */
-int cu_copy_H2D_async(void * /*d_dest*/, void * /*h_src*/, size_t /*bytes*/, cudaStream_t /*s = 0*/);
+int cu_copy_H2D_async(void * /*d_dest*/, void * /*h_src*/, size_t /*bytes*/, hipStream_t /*s = 0*/);
 
 /*! Frees device memory and resets the size and allocation size to -1. */
 void cu_free_buffered(void *d_ptr, int *n = NULL, int *nalloc = NULL);
@@ -210,7 +210,7 @@ void cu_realloc_buffered(void **d_dest, void *h_src,
                          size_t type_size,
                          int *curr_size, int *curr_alloc_size,
                          int req_size,
-                         cudaStream_t s,
+                         hipStream_t s,
                          bool bAsync);
 
 // TODO: the 2 functions below are pretty much a constructor/destructor of a simple
@@ -233,8 +233,8 @@ void cu_realloc_buffered(void **d_dest, void *h_src,
  */
 template <typename T>
 void initParamLookupTable(T                        * &d_ptr,
-                          cudaTextureObject_t       &texObj,
-                          const struct texture<T, 1, cudaReadModeElementType> *texRef,
+                          hipTextureObject_t       &texObj,
+                          const struct texture<T, 1, hipReadModeElementType> *texRef,
                           const T                   *h_ptr,
                           int                        numElem,
                           const gmx_device_info_t   *devInfo);
@@ -251,8 +251,8 @@ void initParamLookupTable(T                        * &d_ptr,
  */
 template <typename T>
 void destroyParamLookupTable(T                         *d_ptr,
-                             cudaTextureObject_t        texObj,
-                             const struct texture<T, 1, cudaReadModeElementType> *texRef,
+                             hipTextureObject_t        texObj,
+                             const struct texture<T, 1, hipReadModeElementType> *texRef,
                              const gmx_device_info_t   *devInfo);
 
 /*! \brief Add a triplets stored in a float3 to an rvec variable.
@@ -270,10 +270,10 @@ static inline void rvec_inc(rvec a, const float3 b)
  *
  * \param[in] s stream to synchronize with
  */
-static inline void gpuStreamSynchronize(cudaStream_t s)
+static inline void gpuStreamSynchronize(hipStream_t s)
 {
-    cudaError_t stat = cudaStreamSynchronize(s);
-    CU_RET_ERR(stat, "cudaStreamSynchronize failed");
+    hipError_t stat = hipStreamSynchronize(s);
+    CU_RET_ERR(stat, "hipStreamSynchronize failed");
 }
 
 /*! \brief  Returns true if all tasks in \p s have completed.
@@ -282,22 +282,22 @@ static inline void gpuStreamSynchronize(cudaStream_t s)
  *
  *  \returns     True if all tasks enqueued in the stream \p s (at the time of this call) have completed.
  */
-static inline bool haveStreamTasksCompleted(cudaStream_t s)
+static inline bool haveStreamTasksCompleted(hipStream_t s)
 {
-    cudaError_t stat = cudaStreamQuery(s);
+    hipError_t stat = hipStreamQuery(s);
 
-    if (stat == cudaErrorNotReady)
+    if (stat == hipErrorNotReady)
     {
         // work is still in progress in the stream
         return false;
     }
 
-    GMX_ASSERT(stat !=  cudaErrorInvalidResourceHandle, "Stream idnetifier not valid");
+    GMX_ASSERT(stat !=  hipErrorInvalidResourceHandle, "Stream idnetifier not valid");
 
-    // cudaSuccess and cudaErrorNotReady are the expected return values
+    // hipSuccess and hipErrorNotReady are the expected return values
     CU_RET_ERR(stat, "Unexpected cudaStreamQuery failure");
 
-    GMX_ASSERT(stat == cudaSuccess, "Values other than cudaSuccess should have been explicitly handled");
+    GMX_ASSERT(stat == hipSuccess, "Values other than hipSuccess should have been explicitly handled");
 
     return true;
 }

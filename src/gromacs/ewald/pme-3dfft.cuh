@@ -42,9 +42,21 @@
 #ifndef GMX_EWALD_PME_3DFFT_CUH
 #define GMX_EWALD_PME_3DFFT_CUH
 
-#include <cufft.h>                  // for the cufft types
+/*#include "gromacs/fft/fft.h"        // for the enum gmx_fft_direction*/
+/*#include <hcc_detail/hip_runtime_api.h>*/
+#include <hipfft.h>                  // for the cufft types
+#include <rocfft.h>
 
-#include "gromacs/fft/fft.h"        // for the enum gmx_fft_direction
+#ifndef GMX_FFT_DIRECTION
+#define GMX_FFT_DIRECTION 
+enum gmx_fft_direction
+{
+    GMX_FFT_FORWARD,         /**< Forward complex-to-complex transform  */
+    GMX_FFT_BACKWARD,        /**< Backward complex-to-complex transform */
+    GMX_FFT_REAL_TO_COMPLEX, /**< Real-to-complex valued FFT            */
+    GMX_FFT_COMPLEX_TO_REAL  /**< Complex-to-real valued FFT            */
+};
+#endif
 
 struct PmeGpu;
 
@@ -53,10 +65,10 @@ struct PmeGpu;
  */
 class GpuParallel3dFft
 {
-    cufftHandle   planR2C_;
-    cufftHandle   planC2R_;
-    cufftReal    *realGrid_;
-    cufftComplex *complexGrid_;
+    hipfftHandle   planR2C_;
+    hipfftHandle   planC2R_;
+    hipfftReal    *realGrid_;
+    hipfftComplex *complexGrid_;
 
     public:
         /*! \brief

@@ -67,8 +67,8 @@ __device__ __forceinline__ T LDG(const T* ptr)
  */
 template <typename T>
 static __forceinline__ __device__
-T fetchFromTexture(const cudaTextureObject_t texObj,
-                   const struct texture<T, 1, cudaReadModeElementType> texRef,
+T fetchFromTexture(const hipTextureObject_t texObj,
+                   const struct texture<T, 1, hipReadModeElementType> texRef,
                    int index)
 {
     assert(index >= 0);
@@ -99,9 +99,9 @@ T fetchFromTexture(const cudaTextureObject_t texObj,
 template <typename T>
 static __forceinline__ __device__
 T fetchFromParamLookupTable(const T                  *d_ptr,
-                            const cudaTextureObject_t texObj,
+                            const hipTextureObject_t texObj,
 #if DISABLE_CUDA_TEXTURES == 0
-                            const struct texture<T, 1, cudaReadModeElementType> texRef,
+                            const struct texture<T, 1, hipReadModeElementType> texRef,
 #endif
                             int index)
 {

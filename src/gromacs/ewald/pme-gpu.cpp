@@ -91,7 +91,7 @@ bool pme_gpu_supports_input(const t_inputrec *ir, std::string *error)
         errorReasons.push_back("double precision");
     }
 #endif
-#if GMX_GPU != GMX_GPU_CUDA
+#if GMX_GPU != GMX_GPU_HIP
     {
         errorReasons.push_back("non-CUDA build of GROMACS");
     }
